@@ -1,3 +1,3 @@
 MODEL_NAME = "bert-base-multilingual-cased"
-CPU = 8
+CPU = 10
 NUM_CLASSES = 2
