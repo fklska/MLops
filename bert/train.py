@@ -37,6 +37,7 @@ def main():
         gradient_checkpointing=True,
         gradient_accumulation_steps=4,
         # Compilation
+        fp16=True,
         torch_compile=False,
         # Logging & Monitoring Training
         logging_steps=1000,
