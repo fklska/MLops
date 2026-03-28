@@ -3,7 +3,7 @@ repos:
     hooks:
       - id: isort
         name: isort
-        entry: isort --settings-file ./.isort.cfg .
+        entry: isort --settings-file .isort.cfg .
         args: ["--profile", "black"]
         language: system
         types: [python]
@@ -11,7 +11,7 @@ repos:
 
       - id: black
         name: black
-        entry: black --config ./.black .
+        entry: black --config .black .
         language: system
         types: [python]
         pass_filenames: false

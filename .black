@@ -1,10 +1,11 @@
 [tool.black]
 line-length = 120
-target-version = ['py311']  # тут пример под питон 3.11
+target-version = ['py312']  # тут пример под питон 3.11
 extend-exclude = '''
     (venv,
     alembic,
     docker,
     .git,
-    __pycache__)
+    __pycache__,
+    commands.txt)
 '''

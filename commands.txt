@@ -1,0 +1,3 @@
+uvicorn app.main:app --reload
+
+pip install psycopg[binary] -i https://mirrors.aliyun.com/pypi/simple/
