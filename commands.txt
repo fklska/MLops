@@ -1,3 +1,8 @@
 uvicorn app.main:app --reload
 
 pip install psycopg[binary] -i https://mirrors.aliyun.com/pypi/simple/
+
+docker run --name PGTEST -p 5433:5432 -e POSTGRES_PASSWORD=1234567 -e POSTGRES_USER=postgres -e POSTGRES_DB=app -d postgres
+
+alembic revision --autogenerate -m "add_films_and_reviews"
+alembic upgrade head
