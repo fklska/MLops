@@ -2,7 +2,7 @@ from logging.config import fileConfig
 
 from alembic import context
 from app.core.db import Base
-from app.core.models import Films, Reviews
+from app.core.models import USER, Films, Reviews
 from sqlalchemy import engine_from_config, pool
 
 # this is the Alembic Config object, which provides

@@ -19,3 +19,9 @@ class Reviews(Base):
     description: Mapped[str] = mapped_column(Text)
     film_id: Mapped[int] = mapped_column(ForeignKey("film.id"))
     film: Mapped["Films"] = relationship(back_populates="reviews")
+    film: Mapped[int]
+
+
+class USER(Base):
+    __tablename__ = "user"
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, index=True)
