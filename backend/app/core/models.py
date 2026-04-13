@@ -1,5 +1,5 @@
 from app.core.db import Base
-from sqlalchemy import BigInteger, ForeignKey, Text
+from sqlalchemy import BigInteger, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
@@ -14,14 +14,9 @@ class Films(Base):
 
 class Reviews(Base):
     __tablename__ = "review"
+
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, index=True)
-    title: Mapped[str]
+    title: Mapped[str] = mapped_column(String(255))
     description: Mapped[str] = mapped_column(Text)
     film_id: Mapped[int] = mapped_column(ForeignKey("film.id"))
     film: Mapped["Films"] = relationship(back_populates="reviews")
-    film: Mapped[int]
-
-
-class USER(Base):
-    __tablename__ = "user"
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, index=True)
