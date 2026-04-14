@@ -26,24 +26,3 @@ async def sft():
 @router.post("/send_to_hf")
 async def send_to_hf():
     pass
-
-
-# XXX: REDIRECT?
-
-
-@router.get("/tensorboard")
-async def tensorboard():
-    # XXX: REDIRECT
-    pass
-
-
-@router.get("/mlfow")
-async def mlfow():
-    # XXX: REDIRECT
-    pass
-
-
-@router.get("/grafana")
-async def grafana():
-    # XXX: REDIRECT
-    pass

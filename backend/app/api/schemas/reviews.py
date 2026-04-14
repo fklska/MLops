@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -13,32 +13,20 @@ class ReviewRequest(ReviewBase):
     pass
 
 
+class ReviewUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    film_id: Optional[int] = None
+
+
 class Review(ReviewBase):
     id: int
+    status: str
+    label: Optional[int] = None
 
     model_config = ConfigDict(from_attributes=True)
 
 
 class ReviewResponse(BaseModel):
     reviews: List[Review]
-
-
-class FilmBase(BaseModel):
-    title: str
-    year: int
-    description: str
-
-
-class FilmRequest(FilmBase):
-    pass
-
-
-class Film(FilmBase):
-    id: int
-    reviews: List[Review]
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class FilmResponse(BaseModel):
-    films: List[Film]
+    details: Optional[str] = None
