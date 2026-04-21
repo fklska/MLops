@@ -23,4 +23,11 @@ git checkout -b <branch_name>
 
 // Worker
 docker run --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-management
-celery -A main worker
+celery -A main worker --loglevel=info --pool=solo
+
+docker run -p 9000:9000 -p 9001:9001 --name minio_s3 minio/minio server /data --console-address ":9001"
+
+dvc remote add -d minio s3://models/
+dvc remote modify minio endpointurl http://localhost:9000
+dvc add <folderpath>
+dvc push
