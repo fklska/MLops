@@ -32,3 +32,6 @@ dvc remote add -d minio s3://models/
 dvc remote modify minio endpointurl http://localhost:9000
 dvc add <folderpath>
 dvc push
+
+
+mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:///mlflow.db --default-artifact-root s3://mlops/ --no-serve-artifacts

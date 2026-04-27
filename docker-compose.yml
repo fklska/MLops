@@ -1,0 +1,14 @@
+services:
+  mlflow:
+    container_name: mlflow_server
+    image: ghcr.io/mlflow/mlflow
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./worker/.env
+    command: >
+      mlflow server 
+      --host 0.0.0.0 
+      --port 5000 
+      --backend-store-uri sqlite:///mlflow.db 
+      --default-artifact-root s3://mlops/
