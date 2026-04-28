@@ -1,9 +1,8 @@
 from core.models import Reviews
-from settings import settings
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
+engine = create_engine("postgresql+psycopg2://postgres:1234567@localhost:5433/app")
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

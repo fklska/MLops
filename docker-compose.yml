@@ -1,4 +1,13 @@
 services:
+  postgresql:
+    container_name: PostgreSQL
+    image: postgres
+    ports:
+      - "5433:5432"
+    env_file:
+      - ./worker/.env
+
+    
   mlflow:
     container_name: mlflow_server
     image: ghcr.io/mlflow/mlflow
@@ -7,8 +16,9 @@ services:
     env_file:
       - ./worker/.env
     command: >
+      sh -c "pip install psycopg2-binary && 
       mlflow server 
       --host 0.0.0.0 
       --port 5000 
-      --backend-store-uri sqlite:///mlflow.db 
-      --default-artifact-root s3://mlops/
+      --backend-store-uri postgresql+psycopg2://postgres:1234567@postgresql:5432/worker 
+      --default-artifact-root s3://mlops/"

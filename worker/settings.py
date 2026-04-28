@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     POSTGRES_DB: str = ""
 
     MLFLOW_TRACKING_URI: str
+    MLFLOW_MODEL_URL: str
 
     MLFLOW_S3_ENDPOINT_URL: str
     AWS_ACCESS_KEY_ID: str
