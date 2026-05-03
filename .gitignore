@@ -8,6 +8,9 @@ backend/alembic.ini
 # C extensions
 *.so
 
+worker/grafana/
+worker/prometheus/data/
+
 # Distribution / packaging
 .Python
 build/

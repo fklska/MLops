@@ -1,11 +1,37 @@
+// FastAPI
 uvicorn app.main:app --reload
 
 pip install psycopg[binary] -i https://mirrors.aliyun.com/pypi/simple/
 
+// Postgres
 docker run --name PGTEST -p 5433:5432 -e POSTGRES_PASSWORD=1234567 -e POSTGRES_USER=postgres -e POSTGRES_DB=app -d postgres
 
-# latest RabbitMQ 4.x
-docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-management
 
+// Alembic
 alembic revision --autogenerate -m "Add label&status review"
 alembic upgrade head
+
+// Git
+git add .
+git commit -m "message"
+git push
+git pull
+git fetch
+git push -u origin <branch_name>
+git checkout -b <branch_name>
+
+
+// Worker
+docker run --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-management
+celery -A main worker --loglevel=info --pool=solo
+
+// MiniO
+docker run -p 9000:9000 -p 9001:9001 --name minio_s3 minio/minio server /data --console-address ":9001"
+
+dvc remote add -d minio s3://models/
+dvc remote modify minio endpointurl http://localhost:9000
+dvc add <folderpath>
+dvc push
+
+
+mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:///mlflow.db --default-artifact-root s3://mlops/ --no-serve-artifacts

@@ -1,7 +1,6 @@
 import enum
 from typing import Optional
 
-from app.core.db import Base
 from sqlalchemy import (
     DECIMAL,
     VARCHAR,
@@ -13,7 +12,11 @@ from sqlalchemy import (
     String,
     Text,
 )
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+
+
+class Base(DeclarativeBase):
+    pass
 
 
 class Films(Base):

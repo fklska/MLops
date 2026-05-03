@@ -1,5 +1,6 @@
 from app.api.schemas.reviews import ReviewRequest, ReviewResponse, ReviewUpdate
 from app.core.db import Session
+from app.core.worker import celery_client
 from app.crud.reviews import (
     create_db_reviews,
     delete_db_review,
@@ -9,6 +10,7 @@ from app.crud.reviews import (
     update_db_review,
 )
 from fastapi import APIRouter, HTTPException
+from fastapi.concurrency import run_in_threadpool
 
 router = APIRouter(prefix="/reviews", tags=["reviews"])
 
@@ -22,7 +24,7 @@ async def get_reviews(session: Session) -> ReviewResponse:
 @router.post("/")
 async def create_review(session: Session, request: ReviewRequest) -> ReviewResponse:
     review = await create_db_reviews(session, request)
-    # TODO Отправить отзыв в воркер
+    await run_in_threadpool(celery_client.send_task, "inference", args=[review.id, request.model_dump()])
     return {"reviews": [review]}
 
 

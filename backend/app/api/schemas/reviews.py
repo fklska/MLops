@@ -22,7 +22,9 @@ class ReviewUpdate(BaseModel):
 class Review(ReviewBase):
     id: int
     status: str
-    label: Optional[int] = None
+    label_id: Optional[int] = None
+    label: Optional[str] = None
+    probability: Optional[float] = None
 
     model_config = ConfigDict(from_attributes=True)
 

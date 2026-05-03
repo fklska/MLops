@@ -1,0 +1,73 @@
+services:
+  postgresql:
+    container_name: PostgreSQL
+    image: postgres
+    ports:
+      - "5433:5432"
+    env_file:
+      - ./worker/.env
+
+  mlflow:
+    container_name: mlflow_server
+    image: ghcr.io/mlflow/mlflow
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./worker/.env
+    command: >
+      sh -c "pip install psycopg2-binary && 
+      mlflow server 
+      --host 0.0.0.0 
+      --port 5000 
+      --backend-store-uri postgresql+psycopg2://postgres:1234567@postgresql:5432/worker 
+      --default-artifact-root s3://mlops/"
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./worker/prometheus/etc:/etc/prometheus/
+      - ./worker/prometheus/data:/prometheus
+    container_name: prometheus
+    hostname: prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Moscow"
+
+  node-exporter:
+    image: prom/node-exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    container_name: exporter
+    hostname: exporter
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --collector.filesystem.ignored-mount-points
+      - ^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)
+    ports:
+      - 9100:9100
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Moscow"
+  
+  grafana:
+    image: grafana/grafana
+    user: root
+    depends_on:
+      - prometheus
+    ports:
+      - 3000:3000
+    volumes:
+      - ./worker/grafana:/var/lib/grafana
+      - ./worker/grafana/provisioning/:/etc/grafana/provisioning/
+    container_name: grafana
+    hostname: grafana
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Moscow"
