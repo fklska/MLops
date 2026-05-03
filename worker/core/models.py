@@ -2,6 +2,8 @@ import enum
 from typing import Optional
 
 from sqlalchemy import (
+    DECIMAL,
+    VARCHAR,
     BigInteger,
     CheckConstraint,
     Enum,
@@ -48,6 +50,15 @@ class Reviews(Base):
         nullable=False,
     )
 
-    label: Mapped[Optional[int]] = mapped_column(
-        Integer, CheckConstraint("label IN (0, 1)", name="check_label_valid_values"), default=None, nullable=True
+    label_id: Mapped[Optional[int]] = mapped_column(
+        Integer, CheckConstraint("label IN (0, 1)", name="check_labelid_valid_values"), default=None, nullable=True
     )
+
+    label: Mapped[Optional[str]] = mapped_column(
+        VARCHAR,
+        CheckConstraint('label IN ("POSITIVE", "NEGATIVE")', name="check_label_valid_values"),
+        default=None,
+        nullable=True,
+    )
+
+    probability: Mapped[Optional[float]] = mapped_column(DECIMAL, default=None, nullable=True)
