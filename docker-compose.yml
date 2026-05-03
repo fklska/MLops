@@ -1,11 +1,38 @@
 services:
   postgresql:
-    container_name: PostgreSQL
+    container_name: postgresql
     image: postgres
     ports:
-      - "5433:5432"
+      - "5432:5432"
     env_file:
       - ./worker/.env
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:4-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  minios3:
+    container_name: minios3
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+
+  fastapi:
+    container_name: backend
+    image: kino/backend
+    build:
+      dockerfile: ./backend/Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - postgresql
 
   mlflow:
     container_name: mlflow_server
