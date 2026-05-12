@@ -1,3 +1,3 @@
 from celery import Celery
 
-celery_client = Celery(broker="amqp://guest:guest@localhost:5672//")
+celery_client = Celery(broker="amqp://guest:guest@rabbitmq:5672//")

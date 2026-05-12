@@ -22,7 +22,7 @@ services:
       - "9001:9001"
     command: server /data --console-address ":9001"
 
-  fastapi:
+  backend:
     container_name: backend
     image: kino/backend
     build:
@@ -35,7 +35,8 @@ services:
       - postgresql
 
   mlflow:
-    container_name: mlflow_server
+    container_name: mlflow
+    hostname: mlflow
     image: ghcr.io/mlflow/mlflow
     ports:
       - "5000:5000"
@@ -47,7 +48,19 @@ services:
       --host 0.0.0.0 
       --port 5000 
       --backend-store-uri postgresql+psycopg2://postgres:1234567@postgresql:5432/worker 
-      --default-artifact-root s3://mlops/"
+      --default-artifact-root s3://mlops/
+      --allowed-hosts mlflow:5000,mlflow"
+
+  worker:
+    container_name: worker
+    image: bert/worker
+    build:
+      dockerfile: ./worker/Dockerfile
+    
+    depends_on:
+      - backend
+      - mlflow
+      - rabbitmq
 
   prometheus:
     image: prom/prometheus:latest
@@ -60,9 +73,8 @@ services:
       - --config.file=/etc/prometheus/prometheus.yml
     ports:
       - 9090:9090
-    restart: unless-stopped
-    environment:
-      TZ: "Europe/Moscow"
+    depends_on:
+      - worker
 
   node-exporter:
     image: prom/node-exporter
@@ -79,15 +91,10 @@ services:
       - ^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)
     ports:
       - 9100:9100
-    restart: unless-stopped
-    environment:
-      TZ: "Europe/Moscow"
   
   grafana:
     image: grafana/grafana
     user: root
-    depends_on:
-      - prometheus
     ports:
       - 3000:3000
     volumes:
@@ -95,6 +102,5 @@ services:
       - ./worker/grafana/provisioning/:/etc/grafana/provisioning/
     container_name: grafana
     hostname: grafana
-    restart: unless-stopped
-    environment:
-      TZ: "Europe/Moscow"
+    depends_on:
+      - prometheus
