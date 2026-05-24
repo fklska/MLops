@@ -24,6 +24,7 @@ class Settings(BaseSettings):
 
     MLFLOW_TRACKING_URI: str
     MLFLOW_MODEL_URL: str
+    MLFLOW_REGISTER_URI: str
 
     MLFLOW_S3_ENDPOINT_URL: str
     AWS_ACCESS_KEY_ID: str
