@@ -1,10 +1,11 @@
 services:
   postgresql:
     container_name: postgresql
-    restart: always
     image: postgres
     ports:
       - "5432:5432"
+    env_file:
+      - ./worker/.env
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -20,65 +21,33 @@ services:
     
     volumes:
       - backend-data:/data/postgres
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - postgres-network
+      - posgres-network
 
   adminer:
     image: adminer
-    restart: always
     ports:
-      - 8080:8080
+      - 8088:8088
     depends_on:
       postgresql:
-        condition: service_healthy
+        condition:service_healthy
     networks:
       - postgres-network
 
   rabbitmq:
     container_name: rabbitmq
-    restart: always
     image: rabbitmq:4-management
     ports:
       - "5672:5672"
       - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
-    
-    healthcheck:
-      test: ["CMD-SHELL", "rabbitmq-diagnostics -q check_port_connectivity"]
-      interval: 10s
-      timeout: 10s
-      retries: 3
-      start_period: 15s
-    networks:
-      - backend-network
-      - worker-network
 
   minios3:
     container_name: minios3
     image: minio/minio
-    restart: always 
     ports:
       - "9000:9000"
       - "9001:9001"
     command: server /data --console-address ":9001"
-
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/ready"]
-      interval: 10s
-      timeout: 10s
-      start_period: 10s
-      retries: 3
-    volumes:
-      - minio-data:/data
-    networks:
-      - worker-network
 
   backend:
     container_name: backend
@@ -92,11 +61,9 @@ services:
     depends_on:
       postgresql:
         condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
     networks:
       - postgres-network
-      - backend-network
+
 
   mlflow:
     container_name: mlflow
@@ -106,28 +73,16 @@ services:
       - "5000:5000"
     env_file:
       - ./worker/.env
-
-    environment:
-      MLFLOW_S3_ENDPOINT_URL: ${MLFLOW_S3_ENDPOINT_URL}
-      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER}
-      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
-
-    command: mlflow server
-      --host 0.0.0.0
+    command: >
+      sh -c "pip install psycopg2-binary && 
+      mlflow server 
+      --host 0.0.0.0 
       --port 5000 
-      --backend-store-uri postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql:5432/${POSTGRES_MLFLOW_DB} 
-      --default-artifact-root s3://${BUCKET}/
-      --allowed-hosts mlflow:5000,localhost:5000
-
+      --backend-store-uri postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql:5432/${POSTGRES_MLFLOW_DB} 
+      --default-artifact-root s3://mlops/
+      --allowed-hosts mlflow:5000,localhost:5000"
     networks:
       - postgres-network
-      - worker-network
-
-    depends_on:
-      postgresql:
-        condition: service_healthy
-      minios3:
-        condition: service_healthy
 
   worker:
     container_name: worker
@@ -136,11 +91,9 @@ services:
       dockerfile: ./worker/Dockerfile
     
     depends_on:
+      - backend
       - mlflow
-    
-    networks:
-      - worker-network
-      - postgres-network
+      - rabbitmq
 
   prometheus:
     image: prom/prometheus:latest
@@ -155,9 +108,7 @@ services:
       - 9090:9090
     depends_on:
       - worker
-    networks:
-      - worker-network
-    
+
   node-exporter:
     image: prom/node-exporter
     volumes:
@@ -173,9 +124,7 @@ services:
       - ^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)
     ports:
       - 9100:9100
-    networks:
-      - worker-network
-
+  
   grafana:
     image: grafana/grafana
     user: root
@@ -188,17 +137,11 @@ services:
     hostname: grafana
     depends_on:
       - prometheus
-    networks:
-      - worker-network
+
 
 volumes:
   backend-data:
-  minio-data:
 
 networks:
   postgres-network:
-    driver: bridge
-  worker-network:
-    driver: bridge
-  backend-network:
     driver: bridge
