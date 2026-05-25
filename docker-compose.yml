@@ -20,7 +20,7 @@ services:
     
     volumes:
       - backend-data:/data/postgres
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sqlw
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - postgres-network
 
@@ -144,15 +144,17 @@ services:
 
   prometheus:
     image: prom/prometheus:latest
-    volumes:
-      - ./worker/prometheus/etc:/etc/prometheus/
-      - ./worker/prometheus/data:/prometheus
     container_name: prometheus
     hostname: prometheus
     command:
       - --config.file=/etc/prometheus/prometheus.yml
     ports:
       - 9090:9090
+    
+    volumes:
+      - prometheus-data:/prometheus
+      - ./worker/prometheus/etc:/etc/prometheus
+      - ./worker/prometheus/data:/prometheus
     depends_on:
       - worker
     networks:
@@ -160,10 +162,6 @@ services:
     
   node-exporter:
     image: prom/node-exporter
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
     container_name: exporter
     hostname: exporter
     command:
@@ -173,27 +171,33 @@ services:
       - ^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)
     ports:
       - 9100:9100
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
     networks:
       - worker-network
 
   grafana:
     image: grafana/grafana
-    user: root
     ports:
       - 3000:3000
-    volumes:
-      - ./worker/grafana:/var/lib/grafana
-      - ./worker/grafana/provisioning/:/etc/grafana/provisioning/
     container_name: grafana
     hostname: grafana
     depends_on:
       - prometheus
     networks:
       - worker-network
+    volumes:
+      - grafana-data:/grafana
+      - ./worker/grafana:/grafana
+      - ./worker/grafana/provisioning/:/grafana/provisioning/
 
 volumes:
   backend-data:
   minio-data:
+  prometheus-data:
+  grafana-data:
 
 networks:
   postgres-network:
