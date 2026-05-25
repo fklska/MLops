@@ -20,7 +20,7 @@ services:
     
     volumes:
       - backend-data:/data/postgres
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sqlw
     networks:
       - postgres-network
 
@@ -38,7 +38,7 @@ services:
   rabbitmq:
     container_name: rabbitmq
     restart: always
-    image: rabbitmq:4-management
+    image: rabbitmq:3.12-management
     ports:
       - "5672:5672"
       - "15672:15672"
