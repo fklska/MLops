@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kinootziv-deployment
+  namespace: kinootziv-app
+  labels:
+    app: kinootziv
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kinootziv
+  template:
+    metadata:
+      labels:
+        app: kinootziv
+    spec:
+      containers:
+      - name: backend
+        image: kino/backend
+        ports:
+        - containerPort: 8000
+      
+      - name: postgresql
+        image: postgres
+        ports:
+        - containerPort: 5432
