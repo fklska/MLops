@@ -1,5 +1,6 @@
 from app.api.schemas.films import FilmRequest, FilmUpdate
-from sqlalchemy import delete, select
+from fastapi import HTTPException
+from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from ..core.db import Session
@@ -14,6 +15,10 @@ async def get_db_films(session: Session):
 
 
 async def create_db_film(session: Session, film: FilmRequest):
+    film_exists = (await session.execute(select(Films).where(Films.title == film.title))).scalar_one_or_none()
+    if film_exists:
+        raise HTTPException(400, "Фильм с таким названием уже существует")
+
     new_film = Films(**film.model_dump())
     session.add(new_film)
     await session.commit()
@@ -52,7 +57,9 @@ async def update_db_film(session: Session, film_id: int, film_in: FilmUpdate):
     return db_film
 
 
-async def delete_db_film(session: Session, film_id: int):
-    result = await session.execute(delete(Films).where(Films.id == film_id))
-    await session.commit()
-    return result.rowcount
+async def delete_db_film(session: Session, film_in: int):
+    db_film = await get_db_film_by_id(session, film_in)
+    if db_film:
+        await session.delete(db_film)
+        await session.commit()
+    return db_film

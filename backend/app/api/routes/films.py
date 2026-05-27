@@ -54,9 +54,9 @@ async def edit_film(film_id: int, session: Session, request: FilmUpdate) -> Film
 
 @router.delete("/{film_id}")
 async def delete_film(film_id: int, session: Session) -> FilmResponse:
-    result = await delete_db_film(session, film_id)
+    film = await delete_db_film(session, film_id)
 
-    if result > 0:
-        return FilmResponse(films=[], details=f"Удалено {result}")
+    if film:
+        return {"films": [film], "details": "Удалено"}
 
     raise HTTPException(status_code=404, detail="Нет такого фильма")
