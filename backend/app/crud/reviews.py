@@ -1,20 +1,21 @@
 from app.api.schemas.reviews import ReviewRequest, ReviewUpdate
-from app.crud.films import get_db_film_by_id
 from fastapi import HTTPException
 from sqlalchemy import select
 
 from ..core.db import Session
-from ..core.models import Reviews
+from ..core.models import Films, Reviews
 
 
 async def get_db_reviews(session: Session):
     result = await session.execute(select(Reviews))
-    return result.scalars().all()
+    reviews = result.scalars().all()
+    session.expunge_all()
+    return reviews
 
 
 async def create_db_reviews(session: Session, review: ReviewRequest):
-    film = await get_db_film_by_id(session, review.film_id)
-    if not film:
+    film_exists = await session.get(Films, review.film_id)
+    if not film_exists:
         raise HTTPException(404, "Нет такого фильма")
 
     exist = await get_review_by_title(session, review.title, review.film_id)
@@ -32,7 +33,7 @@ async def get_review_by_id(session: Session, review_id: int):
     return await session.get(Reviews, review_id)
 
 
-async def get_review_by_title(session: Session, review_title: int, film_id: int):
+async def get_review_by_title(session: Session, review_title: str, film_id: int):
     result = await session.execute(select(Reviews).where(Reviews.film_id == film_id, Reviews.title == review_title))
     return result.scalar_one_or_none()
 

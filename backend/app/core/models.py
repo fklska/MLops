@@ -48,12 +48,12 @@ class Reviews(Base):
     )
 
     label_id: Mapped[Optional[int]] = mapped_column(
-        Integer, CheckConstraint("label IN (0, 1)", name="check_labelid_valid_values"), default=None, nullable=True
+        Integer, CheckConstraint("label IN (0, 1, 2)", name="check_labelid_valid_values"), default=None, nullable=True
     )
 
     label: Mapped[Optional[str]] = mapped_column(
         VARCHAR,
-        CheckConstraint('label IN ("POSITIVE", "NEGATIVE")', name="check_label_valid_values"),
+        CheckConstraint('label IN ("NEUTRAL, POSITIVE", "NEGATIVE")', name="check_label_valid_values"),
         default=None,
         nullable=True,
     )

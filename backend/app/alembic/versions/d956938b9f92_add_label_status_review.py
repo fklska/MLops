@@ -1,8 +1,8 @@
 """Add label&status review
 
-Revision ID: 4a038de33b86
-Revises: 7acb7345babe
-Create Date: 2026-05-24 22:31:19.489896
+Revision ID: d956938b9f92
+Revises: ee62ec6034e9
+Create Date: 2026-05-27 13:58:30.733010
 
 """
 
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "4a038de33b86"
-down_revision: Union[str, Sequence[str], None] = "7acb7345babe"
+revision: str = "d956938b9f92"
+down_revision: Union[str, Sequence[str], None] = "ee62ec6034e9"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

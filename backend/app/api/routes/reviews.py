@@ -18,21 +18,21 @@ router = APIRouter(prefix="/reviews", tags=["reviews"])
 @router.get("/")
 async def get_reviews(session: Session) -> ReviewResponse:
     reviews = await get_db_reviews(session)
-    return {"reviews": reviews}
+    return ReviewResponse(reviews=reviews)
 
 
 @router.post("/")
 async def create_review(session: Session, request: ReviewRequest) -> ReviewResponse:
     review = await create_db_reviews(session, request)
     await run_in_threadpool(celery_client.send_task, "inference", args=[review.id, request.model_dump()])
-    return {"reviews": [review]}
+    return ReviewResponse(reviews=[review])
 
 
 @router.get("/{review_id}")
 async def get_review(review_id: int, session: Session) -> ReviewResponse:
     review = await get_review_by_id(session, review_id)
     if review:
-        return {"reviews": [review]}
+        return ReviewResponse(reviews=[review])
 
     raise HTTPException(status_code=404, detail="Нет такого отзыва")
 
@@ -41,7 +41,7 @@ async def get_review(review_id: int, session: Session) -> ReviewResponse:
 async def replace_review(review_id: int, session: Session, request: ReviewRequest) -> ReviewResponse:
     review = await replace_db_review(session, review_id, request)
     if review:
-        return {"reviews": [review], "details": "Заменено"}
+        return ReviewResponse(reviews=[review], details="Заменено")
 
     raise HTTPException(status_code=404, detail="Нет такого отзыва")
 
@@ -50,7 +50,7 @@ async def replace_review(review_id: int, session: Session, request: ReviewReques
 async def edit_review(review_id: int, session: Session, request: ReviewUpdate) -> ReviewResponse:
     review = await update_db_review(session, review_id, request)
     if review:
-        return {"reviews": [review], "details": "Обновлено"}
+        return ReviewResponse(reviews=[review], details="Обновлено")
 
     raise HTTPException(status_code=404, detail="Нет такого отзыва")
 
@@ -60,6 +60,6 @@ async def delete_review(review_id: int, session: Session) -> ReviewResponse:
     review = await delete_db_review(session, review_id)
 
     if review:
-        return {"reviews": [review], "details": "Удалено"}
+        return ReviewResponse(reviews=[review], details="Удалено")
 
     raise HTTPException(status_code=404, detail="Нет такого отзыва")

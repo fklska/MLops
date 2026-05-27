@@ -8,6 +8,7 @@ docker run --name PGTEST -p 5433:5432 -e POSTGRES_PASSWORD=1234567 -e POSTGRES_U
 
 
 // Alembic
+alembic stamp head
 alembic revision --autogenerate -m "Add label&status review"
 alembic upgrade head
 

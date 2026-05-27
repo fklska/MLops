@@ -2,7 +2,7 @@ services:
   postgresql:
     container_name: postgresql
     restart: always
-    image: postgres
+    image: postgres:18-alpine
     ports:
       - "5432:5432"
     environment:
@@ -111,13 +111,15 @@ services:
       MLFLOW_S3_ENDPOINT_URL: ${MLFLOW_S3_ENDPOINT_URL}
       AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER}
       AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
-
+      GUNICORN_CMD_ARGS: "--workers=1 --threads=2 --max-requests=500 --max-requests-jitter=50"
+    
     command: mlflow server
       --host 0.0.0.0
       --port 5000 
       --backend-store-uri postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql:5432/${POSTGRES_MLFLOW_DB} 
       --default-artifact-root s3://${BUCKET}/
       --allowed-hosts mlflow:5000,localhost:5000
+      --workers=1
 
     networks:
       - postgres-network
@@ -189,8 +191,7 @@ services:
     networks:
       - worker-network
     volumes:
-      - grafana-data:/grafana
-      - ./worker/grafana:/grafana
+      - grafana-data:/var/lib/grafana
       - ./worker/grafana/provisioning/:/grafana/provisioning/
 
 volumes:

@@ -6,8 +6,12 @@ from sqlalchemy.orm import sessionmaker
 engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-ID_2_LABEL = {0: "NEGATIVE", 1: "POSTIVE"}
-LABEL_2_ID = {"NEGATIVE": 0, "POSTIVE": 1}
+ID_2_LABEL = {
+    0: "NEUTRAL",
+    1: "POSTIVE",
+    2: "NEGATIVE",
+}
+LABEL_2_ID = {"NEUTRAL": 0, "POSTIVE": 1, "NEGATIVE": 2}
 
 
 def update_review_label(review_id: int, label: int, prob: float, status: str = "COMPLETED"):
