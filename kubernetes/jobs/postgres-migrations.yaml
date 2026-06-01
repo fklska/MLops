@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: postgres-migration
+  namespace: kinootziv-app
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      containers:
+      - name: migrations
+        image: kino/backend
+        imagePullPolicy: Never
+        command: 
+          - "sh"
+          - "-c"
+          - "alembic revision --autogenerate -m 'init_k8s' && alembic upgrade head"
+      
+        envFrom:
+        - configMapRef:
+            name: backend-cm 
+      restartPolicy: Never
