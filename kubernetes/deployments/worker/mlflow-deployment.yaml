@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow
+  namespace: kinootziv-app
+  labels:
+    app: mlflow
+spec:
+  selector:
+    matchLabels:
+      app: mlflow
+  template:
+    metadata:
+      labels:
+        app: mlflow
+    spec:
+      containers:
+      - name: mlflow
+        image: ghcr.io/mlflow/mlflow
+        resources:
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        ports:
+        - containerPort: 5000
+        envFrom:
+        - configMapRef:
+            name: worker-cm
+        command: ["sh", "-c"]
+        args:
+        - >
+          mlflow server
+          --host 0.0.0.0
+          --port 5000
+          --backend-store-uri postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_SERVER}:5432/${POSTGRES_MLFLOW_DB}
+          --default-artifact-root s3://${BUCKET}/
+          --allowed-hosts '*'
+          --workers=1

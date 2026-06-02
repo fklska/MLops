@@ -111,7 +111,7 @@ services:
       MLFLOW_S3_ENDPOINT_URL: ${MLFLOW_S3_ENDPOINT_URL}
       AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER}
       AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
-      GUNICORN_CMD_ARGS: "--workers=1 --threads=2 --max-requests=500 --max-requests-jitter=50"
+      GUNICORN_CMD_ARGS: "--workers=1 --threads=1 --max-requests=500 --max-requests-jitter=50"
     
     command: mlflow server
       --host 0.0.0.0

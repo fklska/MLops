@@ -8,11 +8,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_ignore_empty=True,
-        extra="ignore",
-    )
+    model_config = SettingsConfigDict(env_file=".env", env_ignore_empty=True, extra="ignore", _env_file=None)
 
     RABBIT_MQ_URL: str
 
@@ -25,6 +21,7 @@ class Settings(BaseSettings):
     MLFLOW_TRACKING_URI: str
     MLFLOW_MODEL_URL: str
     MLFLOW_REGISTER_URI: str
+    BUCKET: str
 
     MLFLOW_S3_ENDPOINT_URL: str
     AWS_ACCESS_KEY_ID: str

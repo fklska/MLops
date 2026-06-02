@@ -55,6 +55,7 @@ class Settings(BaseSettings):
 
     RABBITMQ_DEFAULT_USER: str = ""
     RABBITMQ_DEFAULT_PASS: str = ""
+    RABBITMQ_SERVER: str = ""
 
     @computed_field  # type: ignore[prop-decorator]
     @property
@@ -71,7 +72,7 @@ class Settings(BaseSettings):
     @computed_field  # type: ignore[prop-decorator]
     @property
     def RABBITMQ_URI(self) -> str:
-        return f"amqp://{self.RABBITMQ_DEFAULT_USER}:{self.RABBITMQ_DEFAULT_PASS}@rabbitmq:5672//"
+        return f"amqp://{self.RABBITMQ_DEFAULT_USER}:{self.RABBITMQ_DEFAULT_PASS}@{self.RABBITMQ_SERVER}:5672//"
 
     SMTP_TLS: bool = True
     SMTP_SSL: bool = False

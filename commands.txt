@@ -36,3 +36,8 @@ dvc push
 
 
 mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:///mlflow.db --default-artifact-root s3://mlops/ --no-serve-artifacts
+
+
+// Minikube
+minikube start --memory=6000 --driver=docker
+kubectl config set-context --current --namespace=kinootziv-app

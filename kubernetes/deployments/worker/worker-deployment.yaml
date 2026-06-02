@@ -1,30 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend
+  name: worker
   namespace: kinootziv-app
   labels:
-    app: backend
+    app: worker
 spec:
-  replicas: 1
   selector:
     matchLabels:
-      app: backend
+      app: worker
   template:
     metadata:
       labels:
-        app: backend
+        app: worker
     spec:
       containers:
-      - name: backend
-        image: kino/backend:latest
+      - name: worker
+        image: bert/worker:latest
         imagePullPolicy: Never
         resources:
           limits:
-            memory: "256Mi"
+            memory: "512Mi"
             cpu: "2000m"
         ports:
-        - containerPort: 8000
+        - containerPort: 8088
+
         envFrom:
         - configMapRef:
-            name: backend-cm
+            name: worker-cm

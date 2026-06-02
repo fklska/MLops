@@ -1,11 +1,12 @@
 import mlflow
 from core.db import ID_2_LABEL, LABEL_2_ID
-from settings import settings
+
+# from settings import settings
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 
 def reg_model():
-    mlflow.set_tracking_uri(settings.MLFLOW_REGISTER_URI)
+    mlflow.set_tracking_uri("http://127.0.0.1:30979")
 
     model = AutoModelForSequenceClassification.from_pretrained("fklska/bert-imdb")
     tokenizer = AutoTokenizer.from_pretrained("fklska/bert-imdb")
@@ -29,4 +30,11 @@ def reg_model():
     client.set_registered_model_alias(name="bert-imdb", alias="prod", version=str(model_version))
 
 
+def debug():
+    client = mlflow.MlflowClient()
+    exp = client.get_experiment_by_name("Default")
+    print(exp)
+
+
 reg_model()
+# debug()
