@@ -20,7 +20,7 @@ spec:
         resources:
           limits:
             memory: "128Mi"
-            cpu: "1000m"
+            cpu: "300m"
         command: ['sh', '-c', 'minio server /data --console-address :9001']
         volumeMounts:
         - mountPath: "/data"

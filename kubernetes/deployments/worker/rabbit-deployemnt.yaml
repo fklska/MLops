@@ -20,7 +20,7 @@ spec:
         resources:
           limits:
             memory: "256Mi"
-            cpu: "500m"
+            cpu: "200m"
         ports:
         - containerPort: 5672
           name: "api"

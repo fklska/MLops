@@ -22,7 +22,7 @@ spec:
         resources:
           limits:
             memory: "256Mi"
-            cpu: "2000m"
+            cpu: "300m"
         ports:
         - containerPort: 8000
         envFrom:
