@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
       - name: worker
-        image: bert/worker:latest
-        imagePullPolicy: Never
+        image: fklska/bert-worker:latest
+        imagePullPolicy: IfNotPresent
         resources:
           limits:
             memory: "512Mi"
