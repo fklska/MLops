@@ -18,13 +18,13 @@ spec:
     spec:
       containers:
       - name: prometheus
-        image: prom/prometheus:latest
+        image: prom/prometheus:main
         args: 
           - "--config.file=/etc/prometheus/prometheus.yml" 
         resources:
           limits:
-            memory: "128Mi"
-            cpu: "500m"
+            memory: "256Mi"
+            cpu: "100m"
         ports:
         - containerPort: 9090
         volumeMounts:

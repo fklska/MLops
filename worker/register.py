@@ -6,7 +6,7 @@ from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 
 def reg_model():
-    mlflow.set_tracking_uri("http://127.0.0.1:30979")
+    mlflow.set_tracking_uri("http://127.0.0.1:42804")
 
     model = AutoModelForSequenceClassification.from_pretrained("fklska/bert-imdb")
     tokenizer = AutoTokenizer.from_pretrained("fklska/bert-imdb")

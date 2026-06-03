@@ -4,7 +4,7 @@ metadata:
   name: grafana
   namespace: kinootziv-app
   labels:
-    app: kinootziv
+    app: grafana
 spec:
   replicas: 1
   selector:
@@ -17,10 +17,10 @@ spec:
     spec:
       containers:
       - name: grafana
-        image: grafana/grafana
+        image: grafana/grafana:nightly-slim
         resources:
           limits:
-            memory: "128Mi"
+            memory: "512Mi"
             cpu: "500m"
         ports:
         - containerPort: 3000
@@ -29,7 +29,8 @@ spec:
         - name: grafana-pv
           mountPath: /var/lib/grafana
         - name: datasourses
-          mountPath: /etc/grafana/provisioning/datasources
+          mountPath: /etc/grafana/provisioning/datasources/datasource.yaml
+          subPath: datasource.yaml
 
 
       volumes:

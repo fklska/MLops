@@ -9,12 +9,12 @@ spec:
     spec:
       containers:
       - name: migrations
-        image: kino/backend
-        imagePullPolicy: Never
+        image: fklska/kino-backend:latest
+        imagePullPolicy: IfNotPresent
         command: 
           - "sh"
           - "-c"
-          - "alembic revision --autogenerate -m 'init_k8s' && alembic upgrade head"
+          - "alembic stamp head && alembic revision --autogenerate -m 'init_k8s' && alembic upgrade head"
       
         envFrom:
         - configMapRef:

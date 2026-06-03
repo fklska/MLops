@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: fklksa/kino-backend:latest
+        image: fklska/kino-backend:1.0
         imagePullPolicy: IfNotPresent
         resources:
           limits:
