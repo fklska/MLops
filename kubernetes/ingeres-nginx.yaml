@@ -11,33 +11,33 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "1800"
 spec:
   rules:
-  - host: adminer.fklska.asuscomm.com
+  - host: fklska.asuscomm.com
     http:
       paths:
-      - path: /
-        pathType: Prefix
+      - path: /adminer(/|$)(.*)
+        pathType: ImplementationSpecific
         backend:
           service:
             name: adminer-svc
             port:
               number: 8080
 
-  - host: backend.fklska.asuscomm.com
+  - host: fklska.asuscomm.com
     http:
       paths:
-      - path: /
-        pathType: Prefix
+      - path: /backend(/|$)(.*)
+        pathType: ImplementationSpecific
         backend:
           service:
             name: kinootziv-svc
             port:
               number: 8000
   
-  - host: mlflow.fklska.asuscomm.com
+  - host: fklska.asuscomm.com
     http:
       paths:
-      - path: /
-        pathType: Prefix
+      - path: /mlflow(/|$)(.*)
+        pathType: ImplementationSpecific
         backend:
           service:
             name: mlflow-svc
@@ -48,7 +48,7 @@ spec:
     http:
       paths:
       - path: /
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: minio-svc
@@ -59,7 +59,7 @@ spec:
     http:
       paths:
       - path: /
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: minio-svc
@@ -70,7 +70,7 @@ spec:
     http:
       paths:
       - path: /
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: grafana-svc
@@ -81,7 +81,7 @@ spec:
     http:
       paths:
       - path: /
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: prometheus-svc

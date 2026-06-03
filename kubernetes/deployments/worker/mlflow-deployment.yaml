@@ -28,11 +28,12 @@ spec:
             name: worker-cm
         command: ["sh", "-c"]
         args:
-        - >
-          mlflow server
-          --host 0.0.0.0
-          --port 5000
-          --backend-store-uri postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_SERVER}:5432/${POSTGRES_MLFLOW_DB}
-          --default-artifact-root s3://${BUCKET}/
-          --allowed-hosts '*'
-          --workers=1
+          - |
+            pip install psycopg2-binary boto3
+            mlflow server \
+              --host 0.0.0.0 \
+              --port 5000 \
+              --backend-store-uri postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_SERVER}:5432/${POSTGRES_MLFLOW_DB} \
+              --default-artifact-root s3://${BUCKET}/ \
+              --allowed-hosts '*' \
+              --workers=1
