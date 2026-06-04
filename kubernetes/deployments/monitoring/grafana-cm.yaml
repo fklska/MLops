@@ -4,6 +4,8 @@ metadata:
   name: grafana-cm
   namespace: kinootziv-app
 data:
+  GF_SERVER_ROOT_URL: "https://fklska.asuscomm.com/grafana"
+  GF_SERVER_SERVE_FROM_SUB_PATH: "true"
   datasource.yaml: |
     apiVersion: 1
     datasources:

@@ -5,4 +5,3 @@ RUN pip install --no-cache-dir torch==2.11.0+cpu torchvision==0.26.0+cpu --extra
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 EXPOSE 8088
-CMD ["celery", "-A", "main", "worker", "--loglevel=info", "--pool=solo", "--concurrency=1"]

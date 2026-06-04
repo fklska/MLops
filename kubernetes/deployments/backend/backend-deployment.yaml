@@ -23,6 +23,7 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "300m"
+        command: ["uvicorn", "app.main:app", "--host", "0.0.0.0"]
         ports:
         - containerPort: 8000
         envFrom:

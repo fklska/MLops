@@ -21,6 +21,8 @@ spec:
         image: prom/prometheus:main
         args: 
           - "--config.file=/etc/prometheus/prometheus.yml" 
+          - "--web.external-url=http://fklska.asuscomm.com/prometheus"
+          - "--web.route-prefix=/"
         resources:
           limits:
             memory: "256Mi"

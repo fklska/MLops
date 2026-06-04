@@ -25,6 +25,10 @@ spec:
         ports:
         - containerPort: 3000
 
+        envFrom:
+        - configMapRef:
+            name: grafana-cm
+
         volumeMounts:
         - name: grafana-pv
           mountPath: /var/lib/grafana

@@ -22,6 +22,8 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "1000m"
+
+        command: ["celery", "-A", "main", "worker", "--loglevel=info", "--pool=solo", "--concurrency=1"]
         ports:
         - containerPort: 8088
 

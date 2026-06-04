@@ -4,7 +4,6 @@ metadata:
   name: grafana-svc
   namespace: kinootziv-app
 spec:
-  type: NodePort
   selector:
     app: grafana
   ports:

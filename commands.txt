@@ -42,4 +42,4 @@ mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:///mlflow.db
 minikube start --memory=6000 --driver=docker
 kubectl config set-context --current --namespace=kinootziv-app
 
-minikube start --driver=docker --cpus=6 --memory=20000mb
+minikube start --driver=docker --cpus=6 --memory=20000mb --ports=80:80 --ports=443:443
