@@ -5,6 +5,7 @@ metadata:
   namespace: kinootziv-app
   annotations:
     kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/proxy-body-size: "1024m"
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "1800"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "1800"
@@ -25,7 +26,7 @@ spec:
   - host: fklska.asuscomm.com
     http:
       paths:
-      - path: /backend(/|$)(.*)
+      - path: /
         pathType: ImplementationSpecific
         backend:
           service:
@@ -33,55 +34,55 @@ spec:
             port:
               number: 8000
   
-  - host: mlflow.fklska.asuscomm.com
+  - host: fklska.asuscomm.com
     http:
       paths:
-      - path: /
-        pathType: Prefix
+      - path: /mlflow(/|$)(.*)
+        pathType: ImplementationSpecific
         backend:
           service:
             name: mlflow-svc
             port:
               number: 5000
 
-  - host: minio.fklska.asuscomm.com
+  - host: fklska.asuscomm.com
     http:
       paths:
-      - path: /
-        pathType: Prefix
+      - path: /minio(/|$)(.*)
+        pathType: ImplementationSpecific
         backend:
           service:
             name: minio-svc
             port:
               number: 9001
   
-  - host: minioapi.fklska.asuscomm.com
+  - host: fklska.asuscomm.com
     http:
       paths:
-      - path: /
-        pathType: Prefix
+      - path: /minioapi(/|$)(.*)
+        pathType: ImplementationSpecific
         backend:
           service:
             name: minio-svc
             port:
               number: 9000
   
-  - host: grafana.fklska.asuscomm.com
+  - host: fklska.asuscomm.com
     http:
       paths:
-      - path: /
-        pathType: Prefix
+      - path: /grafana(/|$)(.*)
+        pathType: ImplementationSpecific
         backend:
           service:
             name: grafana-svc
             port:
               number: 3000
   
-  - host: prometheus.fklska.asuscomm.com
+  - host: fklska.asuscomm.com
     http:
       paths:
-      - path: /
-        pathType: Prefix
+      - path: /prometheus(/|$)(.*)
+        pathType: ImplementationSpecific
         backend:
           service:
             name: prometheus-svc
