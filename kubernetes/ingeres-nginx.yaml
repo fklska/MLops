@@ -9,34 +9,41 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "1800"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "1800"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "1800"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      sub_filter_once off;
+      sub_filter 'href="/' 'href="/minio/';
+      sub_filter 'src="/' 'src="/minio/';
+      sub_filter 'action="/' 'action="/minio/';
+      sub_filter_types text/html text/css application/javascript;
 spec:
   rules:
   - host: fklska.asuscomm.com
     http:
       paths:
-      - path: /adminer
-        pathType: Prefix
+      - path: /adminer(/|$)(.*)
+        pathType: ImplementationSpecific
         backend:
           service:
             name: adminer-svc
             port:
               number: 8080
-      - path: /mlflow
-        pathType: Prefix
+      - path: /mlflow(/|$)(.*)
+        pathType: ImplementationSpecific
         backend:
           service:
             name: mlflow-svc
             port:
               number: 5000
-      - path: /minioapi
-        pathType: Prefix
+      - path: /minioapi(/|$)(.*)
+        pathType: ImplementationSpecific
         backend:
           service:
             name: minio-svc
             port:
               number: 9000
-      - path: /minio
-        pathType: Prefix
+      - path: /minio(/|$)(.*)
+        pathType: ImplementationSpecific
         backend:
           service:
             name: minio-svc
