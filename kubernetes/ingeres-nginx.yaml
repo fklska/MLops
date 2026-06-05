@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-rewrite
+  name: ingress-all
   namespace: kinootziv-app
   annotations:
     kubernetes.io/ingress.class: nginx
@@ -9,34 +9,27 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "1800"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "1800"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "1800"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      sub_filter_once off;
-      sub_filter 'href="/' 'href="/minio/';
-      sub_filter 'src="/' 'src="/minio/';
-      sub_filter 'action="/' 'action="/minio/';
-      sub_filter_types text/html text/css application/javascript;
 spec:
   rules:
   - host: fklska.asuscomm.com
     http:
       paths:
-      - path: /adminer(/|$)(.*)
-        pathType: ImplementationSpecific
+      - path: /adminer
+        pathType: Prefix
         backend:
           service:
             name: adminer-svc
             port:
               number: 8080
-      - path: /mlflow(/|$)(.*)
-        pathType: ImplementationSpecific
+      - path: /mlflow
+        pathType: Prefix
         backend:
           service:
             name: mlflow-svc
             port:
               number: 5000
-      - path: /minioapi(/|$)(.*)
-        pathType: ImplementationSpecific
+      - path: /minioapi
+        pathType: Prefix
         backend:
           service:
             name: minio-svc
