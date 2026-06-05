@@ -22,6 +22,11 @@ spec:
             memory: "128Mi"
             cpu: "300m"
         command: ['sh', '-c', 'minio server /data --console-address :9001']
+        env:
+        - name: MINIO_SERVER_URL
+          value: "http://fklska.asuscomm.com:49999"
+        - name: MINIO_BROWSER_REDIRECT_URL
+          value: "http://fklska.asuscomm.com:49999/minio"
         volumeMounts:
         - mountPath: "/data"
           name: minio-pv
