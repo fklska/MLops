@@ -9,64 +9,24 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "1800"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "1800"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "1800"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      sub_filter_once off;
-      sub_filter 'href="/' 'href="/minio/';
-      sub_filter 'src="/' 'src="/minio/';
-      sub_filter 'action="/' 'action="/minio/';
-      sub_filter_types text/html text/css application/javascript;
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   rules:
   - host: fklska.asuscomm.com
     http:
       paths:
-      - path: /adminer(/|$)(.*)
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: adminer-svc
-            port:
-              number: 8080
-      - path: /mlflow(/|$)(.*)
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: mlflow-svc
-            port:
-              number: 5000
-      - path: /minioapi(/|$)(.*)
+      - path: /minioapi/?(.*)
         pathType: ImplementationSpecific
         backend:
           service:
             name: minio-svc
             port:
               number: 9000
-      - path: /minio(/|$)(.*)
+      - path: /minio/?(.*)
         pathType: ImplementationSpecific
         backend:
           service:
             name: minio-svc
             port:
               number: 9001
-      - path: /grafana
-        pathType: Prefix
-        backend:
-          service:
-            name: grafana-svc
-            port:
-              number: 3000
-      - path: /prometheus
-        pathType: Prefix
-        backend:
-          service:
-            name: prometheus-svc
-            port:
-              number: 9090
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: kinootziv-svc
-            port:
-              number: 8000
