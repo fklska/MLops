@@ -19,7 +19,7 @@ spec:
         image: minio/minio
         resources:
           limits:
-            memory: "128Mi"
+            memory: "512Mi"
             cpu: "300m"
         command: ['sh', '-c', 'minio server /data --console-address :9001']
         env:
