@@ -16,6 +16,17 @@ data:
           - source_labels: [__meta_kubernetes_service_name]
             action: keep
             regex: node-exporter-svc
+          - source_labels: [__meta_kubernetes_service_port_name]
+            action: keep
+            regex: metrics
+          - source_labels: [__meta_kubernetes_service_port_number]
+            action: replace
+            target_label: __address__
+            replacement: $1
+          - source_labels: [__address__]
+            regex: '([^:]+):\d+'
+            target_label: __address__
+            replacement: '${1}:9100'
 
       - job_name: 'bert-metrics'
         static_configs:
