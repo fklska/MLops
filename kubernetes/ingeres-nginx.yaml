@@ -58,3 +58,19 @@ spec:
             name: kinootziv-svc
             port:
               number: 8000
+      
+      - path: /prometheus/?(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: prometheus-svc
+            port:
+              number: 9090
+
+      - path: /grafana/?(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: grafana-svc
+            port:
+              number: 3000

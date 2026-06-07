@@ -20,7 +20,7 @@ spec:
         imagePullPolicy: Always
         resources:
           limits:
-            memory: "512Mi"
+            memory: "1024Mi"
             cpu: "500m"
 
         command: ["celery", "-A", "main", "worker", "--loglevel=info", "--pool=solo", "--concurrency=1"]
