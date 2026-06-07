@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio
+  namespace: kinootziv-app
+  labels:
+    app: minio
+spec:
+  selector:
+    matchLabels:
+      app: minio
+  template:
+    metadata:
+      labels:
+        app: minio
+    spec:
+      containers:
+      - name: minio
+        image: minio/minio
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "300m"
+        command: ['sh', '-c', 'minio server /data --console-address :9001']
+        env:
+        - name: MINIO_SERVER_URL
+          value: https://fklska.asuscomm.com:48888/
+        - name: MINIO_BROWSER_REDIRECT_URL
+          value: https://fklska.asuscomm.com:48888/minio/
+        volumeMounts:
+        - mountPath: "/data"
+          name: minio-pv
+        ports:
+        - containerPort: 9000
+          name: "api"
+        - containerPort: 9001
+          name: "web"
+      
+      volumes:
+      - name: minio-pv
+        persistentVolumeClaim:
+          claimName: minio-pvc

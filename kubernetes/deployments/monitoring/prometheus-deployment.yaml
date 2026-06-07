@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: kinootziv-app
+  labels:  
+    app: prometheus
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+      - name: prometheus
+        image: prom/prometheus:main
+        args: 
+          - "--config.file=/etc/prometheus/prometheus.yml" 
+          - "--web.external-url=http://fklska.asuscomm.com/prometheus"
+          - "--web.route-prefix=/"
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 9090
+        volumeMounts:
+        - name: prometheus-pv
+          mountPath: /prometheus
+        - name: prometheus-config
+          mountPath: /etc/prometheus
+
+
+      volumes:
+      - name: prometheus-pv
+        persistentVolumeClaim:
+          claimName: prometheus-pvc
+      - name: prometheus-config
+        configMap:
+          name: prometheus-cm

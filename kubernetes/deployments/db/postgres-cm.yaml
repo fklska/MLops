@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-cm
+  namespace: kinootziv-app
+data:
+  POSTGRES_SERVER: postgres-svc
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: app
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: "1234567"
+
+  init.sql: |
+    SELECT 'CREATE DATABASE worker' 
+    WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'worker')\gexec

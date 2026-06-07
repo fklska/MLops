@@ -1,0 +1,209 @@
+services:
+  postgresql:
+    container_name: postgresql
+    restart: always
+    image: postgres:18-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: /data/postgres
+  
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    
+    volumes:
+      - backend-data:/data/postgres
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - postgres-network
+
+  adminer:
+    image: adminer:5.4.2
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    networks:
+      - postgres-network
+
+  rabbitmq:
+    container_name: rabbitmq
+    restart: always
+    image: rabbitmq:3.12-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q check_port_connectivity"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - backend-network
+      - worker-network
+
+  minios3:
+    container_name: minios3
+    image: minio/minio
+    restart: always 
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/ready"]
+      interval: 10s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+    volumes:
+      - minio-data:/data
+    networks:
+      - worker-network
+
+  backend:
+    container_name: backend
+    image: kino/backend
+    build:
+      dockerfile: ./backend/Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - postgres-network
+      - backend-network
+
+  mlflow:
+    container_name: mlflow
+    hostname: mlflow
+    image: ghcr.io/mlflow/mlflow
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./worker/.env
+
+    environment:
+      MLFLOW_S3_ENDPOINT_URL: ${MLFLOW_S3_ENDPOINT_URL}
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
+      GUNICORN_CMD_ARGS: "--workers=1 --threads=1 --max-requests=500 --max-requests-jitter=50"
+    
+    command: mlflow server
+      --host 0.0.0.0
+      --port 5000 
+      --backend-store-uri postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql:5432/${POSTGRES_MLFLOW_DB} 
+      --default-artifact-root s3://${BUCKET}/
+      --allowed-hosts mlflow:5000,localhost:5000
+      --workers=1
+
+    networks:
+      - postgres-network
+      - worker-network
+
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      minios3:
+        condition: service_healthy
+
+  worker:
+    container_name: worker
+    image: bert/worker
+    build:
+      dockerfile: ./worker/Dockerfile
+    
+    depends_on:
+      - mlflow
+    
+    networks:
+      - worker-network
+      - postgres-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    hostname: prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+    
+    volumes:
+      - prometheus-data:/prometheus
+      - ./worker/prometheus/etc:/etc/prometheus
+      - ./worker/prometheus/data:/prometheus
+    depends_on:
+      - worker
+    networks:
+      - worker-network
+    
+  node-exporter:
+    image: prom/node-exporter
+    container_name: exporter
+    hostname: exporter
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --collector.filesystem.ignored-mount-points
+      - ^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)
+    ports:
+      - 9100:9100
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    networks:
+      - worker-network
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    container_name: grafana
+    hostname: grafana
+    depends_on:
+      - prometheus
+    networks:
+      - worker-network
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./worker/grafana/provisioning/:/grafana/provisioning/
+
+volumes:
+  backend-data:
+  minio-data:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  postgres-network:
+    driver: bridge
+  worker-network:
+    driver: bridge
+  backend-network:
+    driver: bridge

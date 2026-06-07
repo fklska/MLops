@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: kinootziv-app
+  labels:
+    app: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: fklska/kino-backend:1.0
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        command: ["uvicorn", "app.main:app", "--host", "0.0.0.0"]
+        ports:
+        - containerPort: 8000
+        envFrom:
+        - configMapRef:
+            name: backend-cm

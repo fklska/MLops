@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: kinootziv-app
+  labels:
+    app: worker
+spec:
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+      - name: worker
+        image: fklska/bert-worker:1.0
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "1024Mi"
+            cpu: "500m"
+
+        command: ["celery", "-A", "main", "worker", "--loglevel=info", "--pool=solo", "--concurrency=1"]
+        ports:
+        - containerPort: 8088
+
+        envFrom:
+        - configMapRef:
+            name: worker-cm

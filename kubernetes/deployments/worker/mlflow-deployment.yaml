@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow
+  namespace: kinootziv-app
+  labels:
+    app: mlflow
+spec:
+  selector:
+    matchLabels:
+      app: mlflow
+  template:
+    metadata:
+      labels:
+        app: mlflow
+    spec:
+      containers:
+      - name: mlflow
+        image: ghcr.io/mlflow/mlflow:v3.13.0
+        resources:
+          limits:
+            memory: "2Gi"
+            cpu: "300m"
+        ports:
+        - containerPort: 5000
+        envFrom:
+        - configMapRef:
+            name: worker-cm
+        command: ["sh", "-c"]
+        args:
+          - |
+            pip install psycopg2-binary boto3
+            mlflow server \
+              --host 0.0.0.0 \
+              --port 5000 \
+              --backend-store-uri postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_SERVER}:5432/${POSTGRES_MLFLOW_DB} \
+              --default-artifact-root s3://${BUCKET}/ \
+              --allowed-hosts '*' \
+              --workers=1
