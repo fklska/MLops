@@ -11,7 +11,7 @@ spec:
         image: fklska/bert-worker:1.0
         imagePullPolicy: IfNotPresent
         command: ["python3", "register.py"]
-      envFrom:
+        envFrom:
         - configMapRef:
             name: worker-cm 
       restartPolicy: Never
