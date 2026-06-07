@@ -1,5 +1,3 @@
-import os
-
 import boto3
 import mlflow
 from core.db import ID_2_LABEL, LABEL_2_ID
@@ -47,8 +45,6 @@ def reg_model():
 
     client = mlflow.MlflowClient()
     client.set_registered_model_alias(name="bert-imdb", alias="prod", version=str(model_version))
-
-    os.removedirs("model/")
 
 
 def debug():
