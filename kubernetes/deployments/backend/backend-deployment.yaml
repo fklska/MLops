@@ -18,6 +18,7 @@ spec:
       containers:
       - name: backend
         image: fklska/kino-backend:1.0
+        imagePullPolicy: Always
         resources:
           limits:
             memory: "256Mi"
