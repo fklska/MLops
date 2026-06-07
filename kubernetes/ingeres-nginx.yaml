@@ -51,8 +51,8 @@ spec:
             port:
               number: 8080
       
-      - path: /
-        pathType: Prefix
+      - path: /backend/?(.*)
+        pathType: ImplementationSpecific
         backend:
           service:
             name: kinootziv-svc
