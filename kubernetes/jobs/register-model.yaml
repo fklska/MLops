@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: regmodel
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      containers:
+      - name: worker-regmodel
+        image: fklska/bert-worker:1.0
+        imagePullPolicy: IfNotPresent
+        command: ["python3", "register.py"]
+      envFrom:
+        - configMapRef:
+            name: worker-cm 
+      restartPolicy: Never

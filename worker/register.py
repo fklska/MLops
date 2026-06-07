@@ -1,15 +1,34 @@
+import os
+
+import boto3
 import mlflow
 from core.db import ID_2_LABEL, LABEL_2_ID
-
-# from settings import settings
+from settings import settings
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 
-def reg_model():
-    mlflow.set_tracking_uri("http://127.0.0.1:42804")
+def check_or_create_bucket():
+    s3_client = boto3.client(
+        "s3",
+        endpoint_url=settings.MLFLOW_S3_ENDPOINT_URL,
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+    )
 
-    model = AutoModelForSequenceClassification.from_pretrained("fklska/bert-imdb")
-    tokenizer = AutoTokenizer.from_pretrained("fklska/bert-imdb")
+    try:
+        s3_client.create_bucket(Bucket="mlops")
+        print("Bucket mlops created successfully!")
+    except Exception as e:
+        print(f"Error creating bucket: {e}")
+
+
+def reg_model():
+    check_or_create_bucket()
+
+    mlflow.set_tracking_uri(settings.MLFLOW_TRACKING_URI)
+
+    model = AutoModelForSequenceClassification.from_pretrained("fklska/bert-imdb", cache_dir="model/")
+    tokenizer = AutoTokenizer.from_pretrained("fklska/bert-imdb", cache_dir="model/")
 
     transformers_model = {"model": model, "tokenizer": tokenizer}
 
@@ -28,6 +47,8 @@ def reg_model():
 
     client = mlflow.MlflowClient()
     client.set_registered_model_alias(name="bert-imdb", alias="prod", version=str(model_version))
+
+    os.removedirs("model/")
 
 
 def debug():

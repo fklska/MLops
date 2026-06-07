@@ -34,3 +34,19 @@ spec:
             name: minio-svc
             port:
               number: 9001
+      
+      - path: /mlflow/?(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: mlflow-svc
+            port:
+              number: 5000
+      
+      - path: /adminer/?(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: adminer-svc
+            port:
+              number: 8080

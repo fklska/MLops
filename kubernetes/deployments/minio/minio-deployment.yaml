@@ -24,9 +24,9 @@ spec:
         command: ['sh', '-c', 'minio server /data --console-address :9001']
         env:
         - name: MINIO_SERVER_URL
-          value: http://fklska.asuscomm.com:48888/
+          value: https://fklska.asuscomm.com:48888/
         - name: MINIO_BROWSER_REDIRECT_URL
-          value: http://fklska.asuscomm.com:48888/minio/
+          value: https://fklska.asuscomm.com:48888/minio/
         volumeMounts:
         - mountPath: "/data"
           name: minio-pv
