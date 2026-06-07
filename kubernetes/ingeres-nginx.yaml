@@ -50,3 +50,11 @@ spec:
             name: adminer-svc
             port:
               number: 8080
+      
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kinootziv-svc
+            port:
+              number: 8080
