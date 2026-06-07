@@ -19,6 +19,9 @@ spec:
       - name: grafana
         image: grafana/grafana:nightly-slim
         resources:
+          requests:
+            memory: "512Mi"
+            cpu: "75m"
           limits:
             memory: "512Mi"
             cpu: "300m"

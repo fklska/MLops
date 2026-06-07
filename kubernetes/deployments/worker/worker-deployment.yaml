@@ -19,6 +19,9 @@ spec:
         image: fklska/bert-worker:1.0
         imagePullPolicy: Always
         resources:
+          requests:
+            memory: "1024Mi"
+            cpu: "100m"
           limits:
             memory: "1024Mi"
             cpu: "500m"
