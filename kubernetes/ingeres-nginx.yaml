@@ -57,4 +57,4 @@ spec:
           service:
             name: kinootziv-svc
             port:
-              number: 8080
+              number: 8000

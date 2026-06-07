@@ -21,7 +21,7 @@ spec:
         resources:
           limits:
             memory: "256Mi"
-            cpu: "300m"
+            cpu: "500m"
         command: ["uvicorn", "app.main:app", "--host", "0.0.0.0"]
         ports:
         - containerPort: 8000
