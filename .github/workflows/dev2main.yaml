@@ -1,0 +1,62 @@
+name: Test & Create PR to main
+
+on:
+  push:
+    branches:
+      - k8s
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install flake8 pytest pytest-asyncio httpx
+
+      - name: Run linter (flake8)
+        run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+
+      - name: Run tests
+        env:
+          PROJECT_NAME: "Kinootziv"
+        run: pytest tests/ -v
+
+  create-pr:
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create Pull Request if not exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Проверяем, нет ли уже открытого PR из dev в main
+          existing=$(gh pr list --base main --head dev --state open --json number --jq 'length')
+          if [ "$existing" -eq 0 ]; then
+            gh pr create \
+              --base main \
+              --head dev \
+              --title "Auto PR: dev → main" \
+              --body "Автоматический PR после успешного прохождения тестов и линтера."
+          else
+            echo "Pull request already exists, skipping creation."
+          fi
