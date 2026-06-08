@@ -2,7 +2,6 @@ from core.db import get_training_data, mark_reviews_as_trained
 from datasets import Dataset
 from main import classifier, tokenizer
 from register import reg_model
-from settings import hf_config
 from transformers import DataCollatorWithPadding, Trainer, TrainingArguments
 
 data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
@@ -22,7 +21,6 @@ training_args = TrainingArguments(
     save_total_limit=1,
     dataloader_num_workers=4,
     hub_model_id="fklska/bert-imdb",
-    hub_token=hf_config.HF_TOKEN,
 )
 
 
@@ -43,8 +41,6 @@ def start_train():
     reg_model(model, tokenizer)
 
     mark_reviews_as_trained(ids)
-
-    trainer.push_to_hub()
 
 
 start_train()
