@@ -46,6 +46,7 @@ jobs:
   build-backend:
     needs: lint-and-test
     runs-on: ubuntu-latest
+    environment: kinootziv
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -77,6 +78,7 @@ jobs:
   build-worker:
     needs: lint-and-test
     runs-on: ubuntu-latest
+    environment: kinootziv
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
