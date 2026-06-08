@@ -16,7 +16,7 @@ spec:
         command: 
           - "sh"
           - "-c"
-          - "alembic stamp head && alembic revision --autogenerate -m 'init_k8s' && alembic upgrade head"
+          - "alembic upgrade head"
       
         envFrom:
         - configMapRef:
