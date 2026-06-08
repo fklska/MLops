@@ -2,9 +2,6 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
-backend/alembic.ini
-
 # C extensions
 *.so
 
@@ -139,5 +136,3 @@ my_fastapi_app/
 my_fastapi_project/
 test_project/
 test_beanie_project/
-backend/alembic.ini
-backend/alembic.ini

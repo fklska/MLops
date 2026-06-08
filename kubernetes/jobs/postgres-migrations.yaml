@@ -12,6 +12,7 @@ spec:
       containers:
       - name: migrations
         image: fklska/kino-backend:1.0
+        imagePullPolicy: Always
         command: 
           - "sh"
           - "-c"
