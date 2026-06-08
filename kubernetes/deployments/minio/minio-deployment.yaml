@@ -18,8 +18,11 @@ spec:
       - name: minio
         image: minio/minio
         resources:
+          requests:
+            memory: "512Mi"
+            cpu: "50m"
           limits:
-            memory: "128Mi"
+            memory: "512Mi"
             cpu: "300m"
         command: ['sh', '-c', 'minio server /data --console-address :9001']
         env:

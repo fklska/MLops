@@ -15,7 +15,7 @@ spec:
   tls:
   - hosts:
     - fklska.asuscomm.com
-    secretName: minio-tls-secret
+    secretName: tls-secret
   rules:
   - host: fklska.asuscomm.com
     http:

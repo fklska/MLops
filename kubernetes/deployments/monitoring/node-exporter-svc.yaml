@@ -3,6 +3,9 @@ kind: Service
 metadata:
   name: node-exporter-svc
   namespace: kinootziv-app
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9100"
 spec:
   selector:
     app: node-exporter

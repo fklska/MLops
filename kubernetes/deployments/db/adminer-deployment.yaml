@@ -16,6 +16,9 @@ spec:
       - name: adminer
         image: adminer:5.4.2
         resources:
+          requests:
+            memory: "64Mi"
+            cpu: "10m"
           limits:
             memory: "64Mi"
             cpu: "100m"

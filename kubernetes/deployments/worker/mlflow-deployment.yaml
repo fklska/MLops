@@ -18,6 +18,9 @@ spec:
       - name: mlflow
         image: ghcr.io/mlflow/mlflow:v3.13.0
         resources:
+          requests:
+            memory: "2Gi"
+            cpu: "100m"
           limits:
             memory: "2Gi"
             cpu: "300m"
