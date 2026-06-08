@@ -1,13 +1,14 @@
-name: Test & Create PR to main
+name: Test, Build & Create PR to main
 
 on:
   push:
     branches:
-      - k8s
+      - dev
 
 permissions:
   contents: read
   pull-requests: write
+  packages: write
 
 jobs:
   lint-and-test:
@@ -35,15 +36,77 @@ jobs:
 
       - name: Run tests
         env:
-            PROJECT_NAME: "Kinootziv"
-            POSTGRES_SERVER: "localhost"
-            POSTGRES_USER: "test"
-            POSTGRES_PASSWORD: "test"
-            POSTGRES_DB: "test"
+          PROJECT_NAME: "Kinootziv"
+          POSTGRES_SERVER: "localhost"
+          POSTGRES_USER: "test"
+          POSTGRES_PASSWORD: "test"
+          POSTGRES_DB: "test"
         run: pytest tests/ -v
 
-  create-pr:
+  build-backend:
     needs: lint-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: |
+            fklska/kino-backend:1.0
+            fklska/kino-backend:latest
+            ghcr.io/${{ github.repository_owner }}/kino-backend:1.0
+            ghcr.io/${{ github.repository_owner }}/kino-backend:latest
+
+  build-worker:
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push worker
+        uses: docker/build-push-action@v5
+        with:
+          context: ./worker
+          push: true
+          tags: |
+            fklska/bert-worker:1.0
+            fklska/bert-worker:latest
+            ghcr.io/${{ github.repository_owner }}/bert-worker:1.0
+            ghcr.io/${{ github.repository_owner }}/bert-worker:latest
+
+  create-pr:
+    needs: [lint-and-test, build-backend, build-worker]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -53,14 +116,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          # Проверяем, нет ли уже открытого PR из dev в main
           existing=$(gh pr list --base main --head dev --state open --json number --jq 'length')
           if [ "$existing" -eq 0 ]; then
             gh pr create \
               --base main \
               --head dev \
               --title "Auto PR: dev → main" \
-              --body "Автоматический PR после успешного прохождения тестов и линтера."
+              --body "Автоматический PR после успешного прохождения тестов и сборки образов."
           else
             echo "Pull request already exists, skipping creation."
           fi
