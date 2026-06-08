@@ -8,5 +8,5 @@ def classify(text: str):
     return {
         "label": max_label,
         "probability": scores[max_label],
-        "probabilities": scores,  # {"positive": 0.6, "neutral": 0.3, "negative": 0.1}
+        "probabilities": scores,
     }
