@@ -41,6 +41,6 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-
+print(settings.SQLALCHEMY_DATABASE_URI)
 for key, value in settings.model_dump().items():
     os.environ[key] = str(value)

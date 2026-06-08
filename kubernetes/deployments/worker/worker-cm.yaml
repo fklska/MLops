@@ -6,6 +6,7 @@ metadata:
 data:
   POSTGRES_SERVER: postgres-svc
   POSTGRES_PORT: "5432"
+  POSTGRES_DB: app
   POSTGRES_MLFLOW_DB: worker
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: "1234567"
