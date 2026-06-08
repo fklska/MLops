@@ -74,6 +74,8 @@ jobs:
             fklska/kino-backend:latest
             ghcr.io/${{ github.repository_owner }}/kino-backend:1.0
             ghcr.io/${{ github.repository_owner }}/kino-backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   build-worker:
     needs: lint-and-test
@@ -106,6 +108,8 @@ jobs:
             fklska/bert-worker:latest
             ghcr.io/${{ github.repository_owner }}/bert-worker:1.0
             ghcr.io/${{ github.repository_owner }}/bert-worker:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   create-pr:
     needs: [lint-and-test, build-backend, build-worker]
@@ -123,7 +127,7 @@ jobs:
             gh pr create \
               --base main \
               --head k8s \
-              --title "Auto PR: dev → main" \
+              --title "Auto PR: k8s → main" \
               --body "Автоматический PR после успешного прохождения тестов и сборки образов."
           else
             echo "Pull request already exists, skipping creation."
