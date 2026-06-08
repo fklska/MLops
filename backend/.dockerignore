@@ -7,3 +7,4 @@ app.egg-info
 htmlcov
 .venv
 ./venv
+./tests
