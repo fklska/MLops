@@ -3,7 +3,7 @@ name: Test, Build & Create PR to main
 on:
   push:
     branches:
-      - dev
+      - k8s
 
 permissions:
   contents: read
