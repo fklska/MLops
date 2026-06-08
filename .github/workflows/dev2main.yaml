@@ -118,11 +118,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          existing=$(gh pr list --base main --head dev --state open --json number --jq 'length')
+          existing=$(gh pr list --base main --head k8s --state open --json number --jq 'length')
           if [ "$existing" -eq 0 ]; then
             gh pr create \
               --base main \
-              --head dev \
+              --head k8s \
               --title "Auto PR: dev → main" \
               --body "Автоматический PR после успешного прохождения тестов и сборки образов."
           else
