@@ -5,6 +5,7 @@ from sqlalchemy import (
     DECIMAL,
     VARCHAR,
     BigInteger,
+    Boolean,
     CheckConstraint,
     Enum,
     ForeignKey,
@@ -62,3 +63,4 @@ class Reviews(Base):
     )
 
     probability: Mapped[Optional[float]] = mapped_column(DECIMAL, default=None, nullable=True)
+    trained: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)

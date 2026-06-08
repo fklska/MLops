@@ -1,31 +1,43 @@
-# MLops
+# Kinootziv - сервис который классифицирует рецензии к фильмам
 
-[Архитектура](https://miro.com/app/board/uXjVGyP6Ul0=/?share_link_id=522725472856)
+## Доступно по адресу:
+Для удобства и демонстрации через ingress-nginx были проброшены пути к админ панелям сервисов, можно посмотерть в манифесте ingress, а креды в соответствующих `ConfigMap`
 
-# Full Stack FastAPI Template
+```
+/backend/
+/mlflow/
+/grafana/
+/adminer/
+/prometheus/
+/argocd/
+```
 
-<a href="https://github.com/fastapi/full-stack-fastapi-template/actions?query=workflow%3A%22Test+Docker+Compose%22" target="_blank"><img src="https://github.com/fastapi/full-stack-fastapi-template/workflows/Test%20Docker%20Compose/badge.svg" alt="Test Docker Compose"></a>
-<a href="https://github.com/fastapi/full-stack-fastapi-template/actions?query=workflow%3A%22Test+Backend%22" target="_blank"><img src="https://github.com/fastapi/full-stack-fastapi-template/workflows/Test%20Backend/badge.svg" alt="Test Backend"></a>
-<a href="https://coverage-badge.samuelcolvin.workers.dev/redirect/fastapi/full-stack-fastapi-template" target="_blank"><img src="https://coverage-badge.samuelcolvin.workers.dev/fastapi/full-stack-fastapi-template.svg" alt="Coverage"></a>
+## Как запускать?
+### Вариант 1 - через k8s / Minikube
+```
+git clone git@github.com:fklska/MLops.git
+cd MLops
+minikube start --driver=docker --cpus=4 --memory=20000mb --ports=80:80 --ports=443:443
+minikube enable addons ingress-nginx
+kubectl apply -f kubernetes/namespace.yaml
+kubectl config set-context --current --namespace=kinootziv-app
+// kubectl apply -n argocd --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml # Optional
+kubectl apply -f kubernetes/ -R
+```
+Проброс портов нужен для ingress, если у вас нет docker обертки, то поидее не нужен
 
-## Technology Stack and Features
+У вас запустятся и деплойменты и джобы, соответственно джобы успешно отрабатают только если запущены соответсвующие поды для миграций это - postgres, для регистрации модели - mlflow, minio
 
-- ⚡ [**FastAPI**](https://fastapi.tiangolo.com) for the Python backend API.
-  - 🧰 [SQLModel](https://sqlmodel.tiangolo.com) for the Python SQL database interactions (ORM).
-  - 🔍 [Pydantic](https://docs.pydantic.dev), used by FastAPI, for the data validation and settings management.
-  - 💾 [PostgreSQL](https://www.postgresql.org) as the SQL database.
-- 🚀 [React](https://react.dev) for the frontend.
-  - 💃 Using TypeScript, hooks, [Vite](https://vitejs.dev), and other parts of a modern frontend stack.
-  - 🎨 [Tailwind CSS](https://tailwindcss.com) and [shadcn/ui](https://ui.shadcn.com) for the frontend components.
-  - 🤖 An automatically generated frontend client.
-  - 🧪 [Playwright](https://playwright.dev) for End-to-End testing.
-  - 🦇 Dark mode support.
-- 🐋 [Docker Compose](https://www.docker.com) for development and production.
-- 🔒 Secure password hashing by default.
-- 🔑 JWT (JSON Web Token) authentication.
-- 📫 Email based password recovery.
-- 📬 [Mailcatcher](https://mailcatcher.me) for local email testing during development.
-- ✅ Tests with [Pytest](https://pytest.org).
-- 📞 [Traefik](https://traefik.io) as a reverse proxy / load balancer.
-- 🚢 Deployment instructions using Docker Compose, including how to set up a frontend Traefik proxy to handle automatic HTTPS certificates.
-- 🏭 CI (continuous integration) and CD (continuous deployment) based on GitHub Actions.
+`kubectl get all` - просмотр состояния подов и сервисов
+
+
+### Вариант 2 - docker compose up
+Меняете ветку на dev, там нет k8s, все поднимится в docker
+```
+git clone git@github.com:fklska/MLops.git
+cd MLops
+docker compose up -d
+```
+
+## [Архитектура](https://miro.com/app/board/uXjVGyP6Ul0=/?share_link_id=522725472856)
+Приложение состоит из нескольких сервисов

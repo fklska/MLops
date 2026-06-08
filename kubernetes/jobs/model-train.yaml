@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bert-train
+  namespace: kinootziv-app
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      containers:
+      - name: trainer
+        image: fklska/bert-worker:1.0
+        command: ["python3", "train.py"]
+        envFrom:
+          - configMapRef:
+              name: worker-cm
+        resources:
+          limits:
+            cpu: "1000m"
+            memory: "4Gi"
+
+      restartPolicy: Never

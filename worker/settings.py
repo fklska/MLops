@@ -40,7 +40,14 @@ class Settings(BaseSettings):
         )
 
 
+class HFConfig(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", env_ignore_empty=True, extra="ignore")
+
+    HF_TOKEN: str
+
+
 settings = Settings()
-print(settings.SQLALCHEMY_DATABASE_URI)
+hf_config = HFConfig()
+
 for key, value in settings.model_dump().items():
     os.environ[key] = str(value)

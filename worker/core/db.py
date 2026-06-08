@@ -1,6 +1,6 @@
 from core.models import Reviews
 from settings import settings
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select, update
 from sqlalchemy.orm import sessionmaker
 
 engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
@@ -30,3 +30,23 @@ def update_review_label(review_id: int, label: int, prob: float, status: str = "
             return db_review
 
         return None
+
+
+def get_training_data():
+    with SessionLocal() as session:
+        reviews = session.execute(
+            select(Reviews.description, Reviews.label, Reviews.id).where(
+                Reviews.trained is False, Reviews.label.isnot(None)
+            )
+        ).fetchall()
+
+    texts = [row[0] for row in reviews]
+    labels = [LABEL_2_ID[row[1]] for row in reviews]
+    ids = [row[2] for row in reviews]
+    return texts, labels, ids
+
+
+def mark_reviews_as_trained(review_ids: list[int]):
+    with SessionLocal() as session:
+        session.execute(update(Reviews).where(Reviews.id.in_(review_ids)).values(trained=True))
+        session.commit()

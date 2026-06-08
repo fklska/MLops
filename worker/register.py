@@ -20,13 +20,10 @@ def check_or_create_bucket():
         print(f"Error creating bucket: {e}")
 
 
-def reg_model():
+def reg_model(model, tokenizer):
     check_or_create_bucket()
 
     mlflow.set_tracking_uri(settings.MLFLOW_TRACKING_URI)
-
-    model = AutoModelForSequenceClassification.from_pretrained("fklska/bert-imdb", cache_dir="model/")
-    tokenizer = AutoTokenizer.from_pretrained("fklska/bert-imdb", cache_dir="model/")
 
     transformers_model = {"model": model, "tokenizer": tokenizer}
 
@@ -53,5 +50,9 @@ def debug():
     print(exp)
 
 
-reg_model()
-# debug()
+if __name__ == "__main__":
+    model = AutoModelForSequenceClassification.from_pretrained("fklska/bert-imdb", cache_dir="model/")
+    tokenizer = AutoTokenizer.from_pretrained("fklska/bert-imdb", cache_dir="model/")
+
+    reg_model(model, tokenizer)
+    # debug()
