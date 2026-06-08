@@ -139,5 +139,3 @@ my_fastapi_app/
 my_fastapi_project/
 test_project/
 test_beanie_project/
-backend/alembic.ini
-backend/alembic.ini
