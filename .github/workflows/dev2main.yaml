@@ -43,8 +43,26 @@ jobs:
           POSTGRES_DB: "test"
         run: pytest tests/ -v
 
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      worker: ${{ steps.filter.outputs.worker }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for file changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+            worker:
+              - 'worker/**'
+
   build-backend:
-    needs: lint-and-test
+    needs: [lint-and-test, changes]
+    if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
     environment: kinootziv
     steps:
@@ -54,7 +72,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
-            driver: docker-container
+          driver: docker-container
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -79,11 +97,12 @@ jobs:
             fklska/kino-backend:latest
             ghcr.io/${{ github.repository_owner }}/kino-backend:1.0
             ghcr.io/${{ github.repository_owner }}/kino-backend:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
 
   build-worker:
-    needs: lint-and-test
+    needs: [lint-and-test, changes]
+    if: needs.changes.outputs.worker == 'true'
     runs-on: ubuntu-latest
     environment: kinootziv
     steps:
@@ -93,8 +112,8 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
-            driver: docker-container
-            
+          driver: docker-container
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -118,27 +137,38 @@ jobs:
             fklska/bert-worker:latest
             ghcr.io/${{ github.repository_owner }}/bert-worker:1.0
             ghcr.io/${{ github.repository_owner }}/bert-worker:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=worker
+          cache-to: type=gha,mode=max,scope=worker
 
   create-pr:
     needs: [lint-and-test, build-backend, build-worker]
+    if: always() && needs.lint-and-test.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Create Pull Request if not exists
+      - name: Create PR k8s -> main
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          existing=$(gh pr list --base main --head k8s --state open --json number --jq 'length')
-          if [ "$existing" -eq 0 ]; then
-            gh pr create \
-              --base main \
-              --head k8s \
-              --title "Auto PR: k8s → main" \
-              --body "Автоматический PR после успешного прохождения тестов и сборки образов."
+          git fetch origin main
+          commits_ahead=$(git rev-list --count origin/main..origin/k8s)
+          echo "Commits ahead: $commits_ahead"
+          
+          if [ "$commits_ahead" -gt 0 ]; then
+            existing=$(gh pr list --base main --head k8s --state open --json number --jq 'length')
+            if [ "$existing" -eq 0 ]; then
+              gh pr create \
+                --base main \
+                --head k8s \
+                --title "Auto PR: k8s → main" \
+                --body "Автоматический PR после успешного прохождения тестов и сборки образов."
+            else
+              echo "Pull request already exists, skipping creation."
+            fi
           else
-            echo "Pull request already exists, skipping creation."
+            echo "No new commits in k8s, skipping PR creation."
           fi

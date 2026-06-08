@@ -7,4 +7,5 @@ celery_app.conf.update(task_track_started=True, task_serializer="json")
 
 mlflow.set_tracking_uri(settings.MLFLOW_TRACKING_URI)
 
-classifier = mlflow.transformers.load_model(settings.MLFLOW_MODEL_URL)
+classifier = mlflow.transformers.load_model(settings.MLFLOW_MODEL_URL, model_config={"top_k": None})
+tokenizer = classifier.tokenizer
