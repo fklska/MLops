@@ -35,7 +35,11 @@ jobs:
 
       - name: Run tests
         env:
-          PROJECT_NAME: "Kinootziv"
+            PROJECT_NAME: "Kinootziv"
+            POSTGRES_SERVER: "localhost"
+            POSTGRES_USER: "test"
+            POSTGRES_PASSWORD: "test"
+            POSTGRES_DB: "test"
         run: pytest tests/ -v
 
   create-pr:
