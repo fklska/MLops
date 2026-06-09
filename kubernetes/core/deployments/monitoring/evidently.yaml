@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: evidently
-        image: fklska/evidently-service:1.0
+        image: fklska/kino-drift:1.0
         resources:
           requests:
             memory: "256Mi"
