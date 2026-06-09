@@ -8,7 +8,7 @@ from evidently.ui.dashboards import (
 )
 from evidently.ui.workspace import RemoteWorkspace
 
-URL = "http://evidently-service.kinootziv-app.svc.cluster.local:9090"
+URL = "http://evidently-service.kinootziv-app.svc.cluster.local:9999"
 ws = RemoteWorkspace(URL)
 
 project = ws.create_project("BERT Data Drift")
