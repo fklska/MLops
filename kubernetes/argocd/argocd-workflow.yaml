@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: bert-train
+  namespace: kinootziv-app
+spec:
+  entrypoint: main
+  templates:
+  - name: main
+    container:
+      image: fklska/bert-worker:1.0
+      imagePullPolicy: Always
+      command: ["python3", "train.py"]
+      envFrom:
+        - configMapRef:
+            name: worker-cm
+      resources:
+        limits:
+          cpu: "1000m"
+          memory: "8Gi"
