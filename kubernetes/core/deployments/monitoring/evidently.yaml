@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: evidently-deployment
+  namespace: kinootziv-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: evidently
+  template:
+    metadata:
+      labels:
+        app: evidently
+    spec:
+      containers:
+      - name: evidently
+        image: fklska/evidently-service:1.0
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "50m"
+          limits:
+            memory: "256Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 9090
+        volumeMounts:
+        - name: workspace-storage
+          mountPath: /app/workspace
+      volumes:
+      - name: workspace-storage
+        hostPath:
+          path: /data/evidently-workspace
+          type: DirectoryOrCreate

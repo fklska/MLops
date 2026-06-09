@@ -20,11 +20,12 @@ async def start_training():
         try:
             response = await client.post(ARGO_SERVER_URL, json=payload, timeout=10.0)
 
-            if response.status_code == 201:
+            if response.status_code in [200, 201]:
                 data = response.json()
                 return {"status": "success", "detail": f"Запущен воркфлоу {data['metadata']['name']}"}
 
-            raise HTTPException(status_code=response.status_code, detail=f"Argo API вернул ошибку: {response.text}")
+            else:
+                raise HTTPException(status_code=response.status_code, detail=f"Argo API вернул ошибку: {response.text}")
 
         except httpx.RequestError as e:
             raise HTTPException(status_code=503, detail=f"Не удалось связаться с Argo Server: {str(e)}")
