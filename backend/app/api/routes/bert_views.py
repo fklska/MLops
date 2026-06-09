@@ -9,10 +9,11 @@ ARGO_SERVER_URL = "http://argo-workflows-server.argo.svc.cluster.local:2746/api/
 @router.post("/train")
 async def start_training():
     payload = {
-        "resourceKind": "WorkflowTemplate",
-        "resourceName": "bert-train",
-        "submitOptions": {"parameters": []},
-        "workflow": {"metadata": {"generateName": "bert-train-manual-"}, "spec": {}},
+        "namespace": "kinootziv-app",
+        "workflow": {
+            "metadata": {"generateName": "bert-train-manual-", "namespace": "kinootziv-app"},
+            "spec": {"workflowTemplateRef": {"name": "bert-train"}},
+        },
     }
 
     async with httpx.AsyncClient() as client:
