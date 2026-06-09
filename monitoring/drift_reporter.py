@@ -10,7 +10,7 @@ def collect_and_send_drift(reference_path: str, current_df: pd.DataFrame):
     drift_report = Report(metrics=[DataDriftPreset()])
     drift_report.run(reference_data=reference_df, current_data=current_df)
 
-    URL = "http://evidently-service.kinootziv-app.svc.cluster.local:9090"
+    URL = "http://evidently-service.kinootziv-app.svc.cluster.local:9999"
     ws = RemoteWorkspace(URL)
 
     projects = ws.list_projects()
