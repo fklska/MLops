@@ -8,7 +8,6 @@ from app.api.schemas.films import (
 )
 from app.api.schemas.reviews import (
     Review,
-    ReviewBase,
     ReviewResponse,
     ReviewUpdate,
 )
@@ -71,17 +70,6 @@ class TestFilmResponse:
         films = [{"id": 1, "title": "Test", "year": 2020, "description": "desc"}]
         resp = FilmResponse(films=films)
         assert resp.films[0].id == 1
-
-
-class TestReviewBase:
-    def test_valid(self):
-        data = {"title": "Great", "description": "Awesome movie", "film_id": 1}
-        obj = ReviewBase(**data)
-        assert obj.film_id == 1
-
-    def test_missing_field(self):
-        with pytest.raises(ValidationError):
-            ReviewBase(title="Title", description="Desc")
 
 
 class TestReviewUpdate:

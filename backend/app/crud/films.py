@@ -8,7 +8,7 @@ from ..core.models import Films
 
 
 async def get_db_films(session: Session):
-    result = await session.execute(select(Films).options(selectinload(Films.reviews)))
+    result = await session.execute(select(Films).options(selectinload(Films.reviews)).limit(100))
     films = result.scalars().all()
     session.expunge_all()
     return films

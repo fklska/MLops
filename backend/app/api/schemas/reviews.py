@@ -6,21 +6,20 @@ from pydantic import BaseModel, ConfigDict
 class ReviewBase(BaseModel):
     title: str
     description: str
-    film_id: int
 
 
 class ReviewRequest(ReviewBase):
-    pass
+    film_name: str
 
 
 class ReviewUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
-    film_id: Optional[int] = None
 
 
 class Review(ReviewBase):
     id: int
+    film_id: int
     status: str
     label_id: Optional[int] = None
     label: Optional[str] = None
