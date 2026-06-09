@@ -77,7 +77,7 @@ export default function App() {
 
   const handleStartTrain = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/train/`, { method: 'POST' })
+      const res = await fetch(`${API_BASE_URL}/bert/train`, { method: 'POST' })
       if (res.ok) {
         setMessage('Задача переобучения запущена')
       } else {

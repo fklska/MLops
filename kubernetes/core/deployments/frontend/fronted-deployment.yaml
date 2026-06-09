@@ -17,6 +17,7 @@ spec:
       containers:
       - name: frontend
         image: fklska/kino-frontend:1.0
+        imagePullPolicy: Always
         resources:
           limits:
             memory: "128Mi"
