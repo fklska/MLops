@@ -4,6 +4,9 @@ RUN pip install --no-cache-dir evidently pandas pyarrow
 RUN mkdir -p /app/workspace
 
 EXPOSE 9999
-ENV EVIDENTLY_WORKSPACE=/app/workspace
 
-CMD ["evidently", "ui", "--port", "9999", "--host", "0.0.0.0"]
+ENV EVIDENTLY_WORKSPACE=/app/workspace
+ENV EVIDENTLY_HOST=0.0.0.0
+ENV EVIDENTLY_PORT=9999
+
+CMD ["evidently", "ui"]
