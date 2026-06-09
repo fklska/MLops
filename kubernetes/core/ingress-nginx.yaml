@@ -74,3 +74,11 @@ spec:
             name: grafana-svc
             port:
               number: 3000
+
+      - path: /(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: frontend-svc
+            port:
+              number: 80

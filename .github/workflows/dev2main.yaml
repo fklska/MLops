@@ -48,6 +48,7 @@ jobs:
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
       worker: ${{ steps.filter.outputs.worker }}
+      frontend: ${{ steps.filter.outputs.frontend }}
     steps:
       - uses: actions/checkout@v4
       - name: Check for file changes
@@ -59,6 +60,8 @@ jobs:
               - 'backend/**'
             worker:
               - 'worker/**'
+            frontend:
+              - 'frontend/**'
 
   build-backend:
     needs: [lint-and-test, changes]
@@ -140,8 +143,48 @@ jobs:
           cache-from: type=gha,scope=worker
           cache-to: type=gha,mode=max,scope=worker
 
+  build-frontend:
+    needs: [lint-and-test, changes]
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    environment: kinootziv
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          tags: |
+            fklska/kino-frontend:1.0
+            fklska/kino-frontend:latest
+            ghcr.io/${{ github.repository_owner }}/kino-frontend:1.0
+            ghcr.io/${{ github.repository_owner }}/kino-frontend:latest
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,mode=max,scope=frontend
+
   create-pr:
-    needs: [lint-and-test, build-backend, build-worker]
+    needs: [lint-and-test, build-backend, build-worker, build-frontend]
     if: always() && needs.lint-and-test.result == 'success'
     runs-on: ubuntu-latest
     steps:
