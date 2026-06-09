@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-const API_BASE_URL = 'https://fklska.asuscomm.com:48888/backend'
+const API_BASE_URL = '/backend/api/v1'
 
 export default function App() {
   const [reviews, setReviews] = useState([])
