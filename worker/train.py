@@ -2,7 +2,11 @@ from core.db import get_training_data, mark_reviews_as_trained
 from datasets import Dataset
 from main import classifier, tokenizer
 from register import reg_model
-from transformers import DataCollatorWithPadding, Trainer, TrainingArguments
+from transformers import (
+    DataCollatorWithPadding,
+    Trainer,
+    TrainingArguments,
+)
 
 data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
 
@@ -15,7 +19,7 @@ training_args = TrainingArguments(
     fp16=True,
     use_cpu=True,
     torch_compile=False,
-    logging_steps=20,
+    logging_steps=10,
     disable_tqdm=False,
     save_only_model=True,
     save_strategy="epoch",
@@ -33,14 +37,15 @@ def start_train():
     model = classifier.model
     texts, labels, ids = get_training_data()
 
+    if len(texts) < 5:
+        print("NO DATA FOR TRAIN!")
+        return 0
+
     dataset = Dataset.from_dict({"text": texts, "label": labels}).map(tokenize_function)
-
     trainer = Trainer(model=model, args=training_args, train_dataset=dataset, data_collator=data_collator)
-
     trainer.train()
 
     reg_model(model, tokenizer)
-
     mark_reviews_as_trained(ids)
 
 
