@@ -11,6 +11,7 @@ spec:
       containers:
       - name: worker-regmodel
         image: fklska/bert-worker:1.0
+        imagePullPolicy: Always
         command: ["python3", "register.py"]
         envFrom:
         - configMapRef:
