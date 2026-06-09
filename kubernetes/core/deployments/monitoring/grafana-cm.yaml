@@ -6,6 +6,7 @@ metadata:
 data:
   GF_SERVER_ROOT_URL: "https://fklska.asuscomm.com:48888/grafana/"
   GF_SERVER_SERVE_FROM_SUB_PATH: "false"
+  GF_INSTALL_PLUGINS: "marcusolsson-json-datasource"
   datasource.yaml: |
     apiVersion: 1
     datasources:
