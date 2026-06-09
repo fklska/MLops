@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 
 router = APIRouter(prefix="/bert", tags=["bert"])
 
-ARGO_SERVER_URL = "http://argo-server.argo.svc.cluster.local:2746/api/v1/workflows/kinootziv-app"
+ARGO_SERVER_URL = "http://argo-workflows-server.argo.svc.cluster.local:2746/api/v1/workflows/kinootziv-app"
 
 
 @router.post("/train")
