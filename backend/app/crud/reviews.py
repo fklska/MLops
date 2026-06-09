@@ -1,4 +1,4 @@
-from app.api.schemas.reviews import ReviewRequest, ReviewUpdate
+from app.api.schemas.reviews import ReviewBase, ReviewRequest, ReviewUpdate
 from fastapi import HTTPException
 from sqlalchemy import select
 
@@ -7,22 +7,27 @@ from ..core.models import Films, Reviews
 
 
 async def get_db_reviews(session: Session):
-    result = await session.execute(select(Reviews))
+    result = await session.execute(select(Reviews).order_by(Reviews.id.desc()).limit(100))
     reviews = result.scalars().all()
     session.expunge_all()
     return reviews
 
 
 async def create_db_reviews(session: Session, review: ReviewRequest):
-    film_exists = await session.get(Films, review.film_id)
-    if not film_exists:
+    result = await session.execute(select(Films).where(Films.title == review.film_name))
+    film = result.scalars().first()
+    if not film:
         raise HTTPException(404, "Нет такого фильма")
 
-    exist = await get_review_by_title(session, review.title, review.film_id)
+    exist = await get_review_by_title(session, review.title, film.id)
     if exist:
         raise HTTPException(400, "Ревью с таким названием уже существует")
 
-    new_review = Reviews(**review.model_dump())
+    review_data = review.model_dump()
+    review_data.pop("film_name")
+    review_data["film_id"] = film.id
+
+    new_review = Reviews(**review_data)
     session.add(new_review)
     await session.commit()
     await session.refresh(new_review)
@@ -38,7 +43,7 @@ async def get_review_by_title(session: Session, review_title: str, film_id: int)
     return result.scalar_one_or_none()
 
 
-async def replace_db_review(session: Session, review_id: int, review_in: ReviewRequest):
+async def replace_db_review(session: Session, review_id: int, review_in: ReviewBase):
     db_review = await get_review_by_id(session, review_id)
     if db_review:
 
