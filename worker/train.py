@@ -13,6 +13,7 @@ training_args = TrainingArguments(
     gradient_checkpointing=False,
     gradient_accumulation_steps=2,
     fp16=True,
+    use_cpu=True,
     torch_compile=False,
     logging_steps=100,
     disable_tqdm=False,

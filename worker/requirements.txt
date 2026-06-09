@@ -1,3 +1,4 @@
+accelerate==1.13.0
 aiohappyeyeballs==2.6.1
 aiohttp==3.13.5
 aiosignal==1.4.0
@@ -82,6 +83,7 @@ prometheus_client==0.25.0
 prompt_toolkit==3.0.52
 propcache==0.4.1
 protobuf==6.33.6
+psutil==7.2.2
 psycopg==3.3.3
 psycopg-binary==3.3.3
 psycopg2-binary==2.9.9
