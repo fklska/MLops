@@ -8,7 +8,7 @@ ARGO_SERVER_URL = "http://argo-server.argo.svc.cluster.local:2746/api/v1/workflo
 
 @router.post("/train")
 async def start_training():
-    payload = {"namespace": "kinootziv-app", "resourceKind": "WorkflowTemplate", "resourceName": "bert-train"}
+    payload = {"resourceKind": "WorkflowTemplate", "resourceName": "bert-train", "submitOptions": {"parameters": []}}
 
     async with httpx.AsyncClient() as client:
         try:
