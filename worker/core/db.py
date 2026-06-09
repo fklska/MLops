@@ -4,6 +4,7 @@ from sqlalchemy import create_engine, select, update
 from sqlalchemy.orm import sessionmaker
 
 engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
+# "postgresql://postgres:1234567@localhost:5432/app"
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 ID_2_LABEL = {
@@ -36,7 +37,7 @@ def get_training_data():
     with SessionLocal() as session:
         reviews = session.execute(
             select(Reviews.description, Reviews.label, Reviews.id).where(
-                Reviews.trained is False, Reviews.label.isnot(None)
+                Reviews.trained.is_(False), Reviews.label.isnot(None)
             )
         ).fetchall()
 
