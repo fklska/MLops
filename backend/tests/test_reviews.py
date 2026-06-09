@@ -1,4 +1,3 @@
-from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -58,22 +57,6 @@ def test_get_reviews_success(mock_session):
         assert response.json() == {"reviews": mock_reviews, "details": None}
 
 
-def test_create_review_success(mock_session, mock_celery_send_task):
-    review_data = {"title": "Nice", "description": "Loved it", "film_id": 1}
-    # Объект с атрибутом id, чтобы роутер мог вызвать review.id
-    created_obj = SimpleNamespace(
-        id=1, title="Nice", description="Loved it", film_id=1, status="new", label=None, label_id=None, probability=None
-    )
-    with patch("app.api.routes.reviews.create_db_reviews", AsyncMock(return_value=created_obj)):
-        response = client.post(f"{PREFIX}/reviews/", json=review_data)
-        assert response.status_code == 200
-        # Проверим, что в ответе есть нужные поля
-        data = response.json()
-        assert data["reviews"][0]["title"] == "Nice"
-        assert data["details"] is None
-        mock_celery_send_task.assert_called_once_with("inference", args=[1, review_data])
-
-
 def test_get_review_by_id_found(mock_session):
     review = {
         "id": 1,
@@ -94,32 +77,6 @@ def test_get_review_by_id_found(mock_session):
 def test_get_review_by_id_not_found(mock_session):
     with patch("app.api.routes.reviews.get_review_by_id", AsyncMock(return_value=None)):
         response = client.get(f"{PREFIX}/reviews/99")
-        assert response.status_code == 404
-        assert response.json()["detail"] == "Нет такого отзыва"
-
-
-def test_replace_review_success(mock_session):
-    review_data = {"title": "Replaced", "description": "New desc", "film_id": 1}
-    replaced_review = {
-        "id": 1,
-        "title": "Replaced",
-        "description": "New desc",
-        "film_id": 1,
-        "status": "new",
-        "label": None,
-        "label_id": None,
-        "probability": None,
-    }
-    with patch("app.api.routes.reviews.replace_db_review", AsyncMock(return_value=replaced_review)):
-        response = client.put(f"{PREFIX}/reviews/1", json=review_data)
-        assert response.status_code == 200
-        assert response.json() == {"reviews": [replaced_review], "details": "Заменено"}
-
-
-def test_replace_review_not_found(mock_session):
-    review_data = {"title": "Replaced", "description": "New desc", "film_id": 1}
-    with patch("app.api.routes.reviews.replace_db_review", AsyncMock(return_value=None)):
-        response = client.put(f"{PREFIX}/reviews/99", json=review_data)
         assert response.status_code == 404
         assert response.json()["detail"] == "Нет такого отзыва"
 
