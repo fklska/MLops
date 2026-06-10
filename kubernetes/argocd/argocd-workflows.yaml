@@ -13,7 +13,7 @@ spec:
       values: |
         server:
           extraArgs:
-            - --auth-mode=server  # Упрощенная авторизация для разработки в minikube
+            - --auth-mode=server
   destination:
     server: https://kubernetes.default.svc
     namespace: argo
