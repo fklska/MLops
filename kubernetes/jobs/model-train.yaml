@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
       - name: trainer
-        image: fklska/bert-worker:1.0
+        image: fklska/bert-worker:1.44
         imagePullPolicy: Always
         command: ["python3", "train.py"]
         envFrom:

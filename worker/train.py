@@ -38,7 +38,7 @@ def start_train():
     texts, labels, ids = get_training_data()
 
     if len(texts) < 5:
-        print("NO DATA FOR TRAIN!")
+        print("Слишком мало данных")
         return 0
 
     dataset = Dataset.from_dict({"text": texts, "label": labels}).map(tokenize_function)

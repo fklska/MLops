@@ -16,14 +16,14 @@ spec:
     spec:
       containers:
       - name: worker
-        image: fklska/bert-worker:1.0
+        image: fklska/bert-worker:1.44
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "1024Mi"
+            memory: "2048Mi"
             cpu: "100m"
           limits:
-            memory: "1024Mi"
+            memory: "2048Mi"
             cpu: "500m"
 
         command: ["celery", "-A", "main", "worker", "--loglevel=info", "--pool=solo", "--concurrency=1"]

@@ -1,11 +1,12 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: postgres
   namespace: kinootziv-app
   labels:
     app: postgresql
 spec:
+  serviceName: postgres-headless
   replicas: 1
   selector:
     matchLabels:
@@ -30,7 +31,7 @@ spec:
         volumeMounts:
         - name: init-db
           mountPath: /docker-entrypoint-initdb.d
-        - name: postgres-pv
+        - name: postgres-data
           mountPath: "/var/lib/postgresql"
           subPath: pgdata
         envFrom:  
@@ -40,6 +41,11 @@ spec:
       - name: init-db
         configMap:
           name: postgres-cm
-      - name: postgres-pv
-        persistentVolumeClaim:
-          claimName: postgres-pvc
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 2Gi

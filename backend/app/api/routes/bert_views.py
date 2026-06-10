@@ -22,7 +22,7 @@ async def start_training():
 
             if response.status_code in [200, 201]:
                 data = response.json()
-                return {"status": "success", "detail": f"Запущен воркфлоу {data['metadata']['name']}"}
+                return {"status": "success", "detail": f"Воркфлоу успешно запущен {data['metadata']['name']}"}
 
             else:
                 raise HTTPException(status_code=response.status_code, detail=f"Argo API вернул ошибку: {response.text}")

@@ -6,7 +6,7 @@ on:
       - k8s
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
   packages: write
 
@@ -99,9 +99,9 @@ jobs:
           context: ./backend
           push: true
           tags: |
-            fklska/kino-backend:1.0
+            fklska/kino-backend:1.${{ github.run_number }}
             fklska/kino-backend:latest
-            ghcr.io/${{ github.repository_owner }}/kino-backend:1.0
+            ghcr.io/${{ github.repository_owner }}/kino-backend:1.${{ github.run_number }}
             ghcr.io/${{ github.repository_owner }}/kino-backend:latest
           cache-from: type=gha,scope=backend
           cache-to: type=gha,mode=max,scope=backend
@@ -139,9 +139,9 @@ jobs:
           context: ./worker
           push: true
           tags: |
-            fklska/bert-worker:1.0
+            fklska/bert-worker:1.${{ github.run_number }}
             fklska/bert-worker:latest
-            ghcr.io/${{ github.repository_owner }}/bert-worker:1.0
+            ghcr.io/${{ github.repository_owner }}/bert-worker:1.${{ github.run_number }}
             ghcr.io/${{ github.repository_owner }}/bert-worker:latest
           cache-from: type=gha,scope=worker
           cache-to: type=gha,mode=max,scope=worker
@@ -179,9 +179,9 @@ jobs:
           context: ./frontend
           push: true
           tags: |
-            fklska/kino-frontend:1.0
+            fklska/kino-frontend:1.${{ github.run_number }}
             fklska/kino-frontend:latest
-            ghcr.io/${{ github.repository_owner }}/kino-frontend:1.0
+            ghcr.io/${{ github.repository_owner }}/kino-frontend:1.${{ github.run_number }}
             ghcr.io/${{ github.repository_owner }}/kino-frontend:latest
           cache-from: type=gha,scope=frontend
           cache-to: type=gha,mode=max,scope=frontend
@@ -219,16 +219,56 @@ jobs:
           context: ./monitoring
           push: true
           tags: |
-            fklska/kino-drift:1.0
+            fklska/kino-drift:1.${{ github.run_number }}
             fklska/kino-drift:latest
-            ghcr.io/${{ github.repository_owner }}/kino-drift:1.0
+            ghcr.io/${{ github.repository_owner }}/kino-drift:1.${{ github.run_number }}
             ghcr.io/${{ github.repository_owner }}/kino-drift:latest
           cache-from: type=gha,scope=monitoring
           cache-to: type=gha,mode=max,scope=monitoring
 
+  update-manifests:
+    needs: [changes, build-backend, build-worker, build-frontend, build-monitoring]
+    if: always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: k8s
+
+      - name: Update tags in manifests
+        run: |
+          if [ "${{ needs.changes.outputs.backend }}" = "true" ]; then
+            sed -i 's|image: fklska/kino-backend:.*|image: fklska/kino-backend:1.${{ github.run_number }}|g' kubernetes/core/deployments/backend/backend-deployment.yaml
+            sed -i 's|image: fklska/kino-backend:.*|image: fklska/kino-backend:1.${{ github.run_number }}|g' kubernetes/jobs/postgres-migrations.yaml
+          fi
+          if [ "${{ needs.changes.outputs.worker }}" = "true" ]; then
+            sed -i 's|image: fklska/bert-worker:.*|image: fklska/bert-worker:1.${{ github.run_number }}|g' kubernetes/core/deployments/worker/worker-deployment.yaml
+            sed -i 's|image: fklska/bert-worker:.*|image: fklska/bert-worker:1.${{ github.run_number }}|g' kubernetes/jobs/model-train.yaml
+            sed -i 's|image: fklska/bert-worker:.*|image: fklska/bert-worker:1.${{ github.run_number }}|g' kubernetes/jobs/register-model.yaml
+          fi
+          if [ "${{ needs.changes.outputs.frontend }}" = "true" ]; then
+            sed -i 's|image: fklska/kino-frontend:.*|image: fklska/kino-frontend:1.${{ github.run_number }}|g' kubernetes/core/deployments/frontend/fronted-deployment.yaml
+          fi
+          if [ "${{ needs.changes.outputs.monitoring }}" = "true" ]; then
+            sed -i 's|image: fklska/kino-drift:.*|image: fklska/kino-drift:1.${{ github.run_number }}|g' kubernetes/core/deployments/monitoring/evidently.yaml
+          fi
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add kubernetes/
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: update image tags to $1.{{ github.run_number }} [skip ci]"
+            git push origin k8s
+          else
+            echo "No changes to commit"
+          fi
+
   create-pr:
-    needs: [lint-and-test, build-backend, build-worker, build-frontend, build-monitoring]
-    if: always() && needs.lint-and-test.result == 'success'
+    needs: [lint-and-test, update-manifests]
+    if: always() && needs.lint-and-test.result == 'success' && (needs.update-manifests.result == 'success' || needs.update-manifests.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

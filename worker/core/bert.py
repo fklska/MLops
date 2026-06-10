@@ -2,7 +2,7 @@ from main import classifier
 
 
 def classify(text: str):
-    raw_results = classifier(text)
+    raw_results = classifier(text, truncation=True, max_length=512)
     scores = {r["label"]: r["score"] for r in raw_results}
     max_label = max(scores, key=scores.get)
     return {
