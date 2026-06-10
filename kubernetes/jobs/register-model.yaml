@@ -3,10 +3,8 @@ kind: Job
 metadata:
   name: regmodel
   annotations:
-    argocd.argoproj.io/hook: Manual
-    argocd.argoproj.io/sync-options: Prune=false
+    argocd.argoproj.io/sync-options: Skip=true,Prune=false
 spec:
-  ttlSecondsAfterFinished: 100
   template:
     spec:
       containers:
