@@ -4,6 +4,7 @@ metadata:
   name: postgres-migration
   namespace: kinootziv-app
   annotations:
+    argocd.argoproj.io/hook: Manual
     argocd.argoproj.io/sync-options: Prune=false
 spec:
   ttlSecondsAfterFinished: 100
