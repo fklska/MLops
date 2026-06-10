@@ -16,7 +16,7 @@ project.description = "Мониторинг отклонения данных"
 
 project.dashboard.add_panel(
     DashboardPanelCounter(
-        title="Всего отчетов",
+        title="Всего отчетов:",
         filter=ReportFilter(metadata_values={}, tag_values=[]),
         value=PanelValue.COUNTER,
         size=WidgetSize.HALF,
