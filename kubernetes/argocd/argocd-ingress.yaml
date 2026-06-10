@@ -8,13 +8,14 @@ metadata:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/proxy-ssl-verify: "off"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   rules:
   - host: fklska.asuscomm.com
     http:
       paths:
-      - path: /argocd
-        pathType: Prefix
+      - path: /argocd/?(.*)
+        pathType: ImplementationSpecific
         backend:
           service:
             name: argocd-server
@@ -23,4 +24,4 @@ spec:
   tls:
   - hosts:
     - fklska.asuscomm.com
-    secretName: tls-secret
+    secretName: minio-tls-secret
