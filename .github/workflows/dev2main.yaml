@@ -239,19 +239,19 @@ jobs:
       - name: Update tags in manifests
         run: |
           if [ "${{ needs.changes.outputs.backend }}" = "true" ]; then
-            sed -i 's|image: fklska/kino-backend:.*|image: fklska/kino-backend:1.${{ github.run_number }}|g' kubernetes/deployments/backend/backend-deployment.yaml
+            sed -i 's|image: fklska/kino-backend:.*|image: fklska/kino-backend:1.${{ github.run_number }}|g' kubernetes/core/deployments/backend/backend-deployment.yaml
             sed -i 's|image: fklska/kino-backend:.*|image: fklska/kino-backend:1.${{ github.run_number }}|g' kubernetes/jobs/postgres-migrations.yaml
           fi
           if [ "${{ needs.changes.outputs.worker }}" = "true" ]; then
-            sed -i 's|image: fklska/bert-worker:.*|image: fklska/bert-worker:1.${{ github.run_number }}|g' kubernetes/deployments/worker/worker-deployment.yaml
+            sed -i 's|image: fklska/bert-worker:.*|image: fklska/bert-worker:1.${{ github.run_number }}|g' kubernetes/core/deployments/worker/worker-deployment.yaml
             sed -i 's|image: fklska/bert-worker:.*|image: fklska/bert-worker:1.${{ github.run_number }}|g' kubernetes/jobs/model-train.yaml
             sed -i 's|image: fklska/bert-worker:.*|image: fklska/bert-worker:1.${{ github.run_number }}|g' kubernetes/jobs/register-model.yaml
           fi
           if [ "${{ needs.changes.outputs.frontend }}" = "true" ]; then
-            sed -i 's|image: fklska/kino-frontend:.*|image: fklska/kino-frontend:1.${{ github.run_number }}|g' kubernetes/deployments/frontend/fronted-deployment.yaml
+            sed -i 's|image: fklska/kino-frontend:.*|image: fklska/kino-frontend:1.${{ github.run_number }}|g' kubernetes/core/deployments/frontend/fronted-deployment.yaml
           fi
           if [ "${{ needs.changes.outputs.monitoring }}" = "true" ]; then
-            sed -i 's|image: fklska/kino-drift:.*|image: fklska/kino-drift:1.${{ github.run_number }}|g' kubernetes/deployments/monitoring/evidently.yaml
+            sed -i 's|image: fklska/kino-drift:.*|image: fklska/kino-drift:1.${{ github.run_number }}|g' kubernetes/core/deployments/monitoring/evidently.yaml
           fi
 
       - name: Commit and push changes
