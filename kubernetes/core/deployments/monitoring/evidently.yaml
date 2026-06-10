@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: evidently
-        image: fklska/kino-drift:1.0
+        image: fklska/kino-drift:1.43
         imagePullPolicy: Always
         command: ["evidently", "ui", "--host", "0.0.0.0", "--port", "9999"]
         resources:
