@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: fklska/kino-frontend:1.0
+        image: fklska/kino-frontend:1.44
         imagePullPolicy: Always
         resources:
           limits:
