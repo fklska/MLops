@@ -1,6 +1,6 @@
 import pandas as pd
 from datasets import load_dataset
-from evidently.metric_preset import (
+from evidently.metric_presets import (
     DataDriftPreset,
     TargetDriftPreset,
     TextOverviewPreset,
