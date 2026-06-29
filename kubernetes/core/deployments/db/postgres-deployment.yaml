@@ -32,7 +32,7 @@ spec:
         - name: init-db
           mountPath: /docker-entrypoint-initdb.d
         - name: postgres-data
-          mountPath: "/var/lib/postgresql/data"
+          mountPath: "/var/lib/postgresql"
           subPath: pgdata
         envFrom:  
         - configMapRef:
