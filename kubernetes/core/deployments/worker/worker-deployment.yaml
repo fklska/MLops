@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: worker
-        image: fklska/bert-worker:1.44
+        image: fklska/bert-worker:1.58
         imagePullPolicy: Always
         resources:
           requests:
