@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: evidently-ui-service
+  namespace: kinootziv-app
+spec:
+  type: ClusterIP
+  ports:
+  - port: 7888
+    targetPort: 7888
+  selector:
+    app: evidently-ui

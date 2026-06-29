@@ -228,7 +228,7 @@ jobs:
 
   update-manifests:
     needs: [changes, build-backend, build-worker, build-frontend, build-monitoring]
-    if: always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
+    if: always() && needs.lint-and-test.result == 'success' && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
