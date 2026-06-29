@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: fklska/kino-backend:1.51
+        image: fklska/kino-backend:1.57
         imagePullPolicy: Always
         resources:
           requests:
