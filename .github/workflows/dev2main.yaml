@@ -260,7 +260,7 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add kubernetes/
           if ! git diff --cached --quiet; then
-            git commit -m "chore: update image tags to $1.{{ github.run_number }} [skip ci]"
+            git commit -m "update image tags to 1.${{ github.run_number }} [skip ci]"
             git push origin k8s
           else
             echo "No changes to commit"

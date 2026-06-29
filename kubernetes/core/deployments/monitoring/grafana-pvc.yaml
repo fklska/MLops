@@ -4,6 +4,7 @@ metadata:
   name: grafana-pvc
   namespace: kinootziv-app
 spec:
+  storageClassName: grafana-manual
   resources:
     requests:
       storage: "1Gi"
