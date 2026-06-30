@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: evidently-container
-        image: fklska/kino-drift:1.63
+        image: fklska/kino-drift:1.65
         imagePullPolicy: Always
         ports:
         - containerPort: 7888
@@ -25,7 +25,7 @@ spec:
             cpu: "50m"
           limits:
             memory: "2048Mi"
-            cpu: "100m"
+            cpu: "500m"
         volumeMounts:
         - name: logs-storage
           mountPath: /app/logs
