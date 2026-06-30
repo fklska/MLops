@@ -5,6 +5,7 @@ from datasets import load_dataset
 from evidently import Report
 from evidently.presets import (
     DataDriftPreset,
+    DataSummaryPreset,
     TextEvals,
 )
 from evidently.ui.workspace import Workspace
@@ -18,6 +19,7 @@ DB_PORT = os.getenv("POSTGRES_PORT", "5432")
 WORKSPACE_PATH = "/app/evidently_workspace"
 
 try:
+    # engine = create_engine(f"postgresql://postgres:1234567@127.0.0.1:5432/app")
     engine = create_engine(f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
     query = "SELECT description, label_id FROM review ORDER BY id DESC LIMIT 10000;"
     curr = pd.read_sql_query(query, engine)
@@ -41,12 +43,13 @@ dataset = load_dataset("fklska/bert_sentiment_ds", split="train").shuffle(42).se
 ref = pd.DataFrame(dataset)
 ref = ref[["text", "label"]]
 
-drift_report = Report(metrics=[DataDriftPreset(), TextEvals()])
-drift_report.run(reference_data=ref, current_data=curr)
+drift_report = Report(metrics=[DataDriftPreset(), TextEvals(), DataSummaryPreset()])
+result = drift_report.run(reference_data=ref, current_data=curr)
 
 ws = Workspace.create(WORKSPACE_PATH)
 project = next((p for p in ws.list_projects() if p.name == "kinootziv_monitoring"), None)
 if not project:
     project = ws.create_project("kinootziv_monitoring")
+project.save()
 
-ws.add_report(project.id, drift_report)
+ws.add_run(project.id, result)
