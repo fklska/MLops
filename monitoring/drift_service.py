@@ -13,7 +13,7 @@ print(evidently.__version__)
 CURR_PATH = "/app/logs/current_production.csv"
 WORKSPACE_PATH = "/app/evidently_workspace"
 
-dataset = load_dataset("fklska/bert_sentiment_ds", split="train")
+dataset = load_dataset("fklska/bert_sentiment_ds", split="train").shuffle(42).select(range(10000))
 ref = pd.DataFrame(dataset)
 
 curr = pd.read_csv(CURR_PATH)

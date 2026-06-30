@@ -18,6 +18,7 @@ from metrics import (
 
 log_file = "/app/logs/current_production.csv"
 file_exists = os.path.isfile(log_file)
+os.makedirs(os.path.dirname(log_file), exist_ok=True)
 
 
 @celery_app.task(name="inference")
