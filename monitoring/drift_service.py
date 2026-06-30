@@ -1,12 +1,14 @@
+import evidently
 import pandas as pd
 from datasets import load_dataset
+from evidently import Report
 from evidently.presets import (
     DataDriftPreset,
-    TargetDriftPreset,
     TextEvals,
 )
-from evidently.report import Report
 from evidently.ui.workspace import Workspace
+
+print(evidently.__version__)
 
 CURR_PATH = "/app/logs/current_production.csv"
 WORKSPACE_PATH = "/app/evidently_workspace"
@@ -19,7 +21,7 @@ curr = pd.read_csv(CURR_PATH)
 ref = ref[["text", "label"]]
 curr = curr[["text", "label"]]
 
-drift_report = Report(metrics=[DataDriftPreset(), TargetDriftPreset(), TextEvals()])
+drift_report = Report(metrics=[DataDriftPreset(), TextEvals()], include_tests=True)
 
 drift_report.run(reference_data=ref, current_data=curr)
 
