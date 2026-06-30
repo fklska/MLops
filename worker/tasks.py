@@ -1,9 +1,7 @@
-import csv
 import math
-import os
 
 from core.bert import classify
-from core.db import LABEL_2_ID, update_review_label
+from core.db import update_review_label
 from main import celery_app, tokenizer
 from metrics import (
     INFERENCE_TIME,
@@ -15,10 +13,6 @@ from metrics import (
     REVIEW_TEXT_LENGTH,
     TOKEN_COUNT,
 )
-
-log_file = "/app/logs/current_production.csv"
-file_exists = os.path.isfile(log_file)
-os.makedirs(os.path.dirname(log_file), exist_ok=True)
 
 
 @celery_app.task(name="inference")
@@ -46,11 +40,5 @@ def run_inference(review_id: int, data: dict):
 
     PREDICTION_COUNTER.labels(label=label).inc()
     update_review_label(review_id, label, prob)
-
-    with open(log_file, "a", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        if not file_exists:
-            writer.writerow(["text", "target"])
-        writer.writerow([text, LABEL_2_ID[label]])
 
     return label

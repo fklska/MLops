@@ -1,5 +1,7 @@
-import evidently
+import os
+
 import pandas as pd
+import psycopg2
 from datasets import load_dataset
 from evidently import Report
 from evidently.presets import (
@@ -8,18 +10,32 @@ from evidently.presets import (
 )
 from evidently.ui.workspace import Workspace
 
-print(evidently.__version__)
+DB_HOST = os.getenv("POSTGRES_SERVER", "localhost")
+DB_USER = os.getenv("POSTGRES_USER", "postgres")
+DB_PASSWORD = os.getenv("POSTGRES_PASSWORD", "postgres")
+DB_NAME = os.getenv("POSTGRES_DB", "postgres")
+DB_PORT = os.getenv("POSTGRES_PORT", "5432")
 
-CURR_PATH = "/app/logs/current_production.csv"
 WORKSPACE_PATH = "/app/evidently_workspace"
 
 dataset = load_dataset("fklska/bert_sentiment_ds", split="train").shuffle(42).select(range(10000))
 ref = pd.DataFrame(dataset)
 
-curr = pd.read_csv(CURR_PATH)
+conn = psycopg2.connect(host=DB_HOST, database=DB_NAME, user=DB_USER, password=DB_PASSWORD, port=DB_PORT)
+query = "SELECT description, label_id FROM review ORDER BY id DESC LIMIT 10000;"
 
+curr = pd.read_sql_query(query, conn)
+conn.close()
+
+if curr.empty:
+    ws = Workspace.create(WORKSPACE_PATH)
+    if not ws.get_project("kinootziv_monitoring"):
+        ws.create_project("kinootziv_monitoring")
+    exit(0)
+
+curr.columns = ["text", "label"]
 ref = ref[["text", "label"]]
-curr = curr[["text", "label"]]
+
 
 drift_report = Report(metrics=[DataDriftPreset(), TextEvals()], include_tests=True)
 

@@ -19,6 +19,9 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 7888
+        envFrom:
+          - configMapRef:
+              name: postgres-cm
         resources:
           requests:
             memory: "128Mi"
@@ -26,10 +29,3 @@ spec:
           limits:
             memory: "2048Mi"
             cpu: "500m"
-        volumeMounts:
-        - name: logs-storage
-          mountPath: /app/logs
-      volumes:
-      - name: logs-storage
-        persistentVolumeClaim:
-          claimName: worker-logs-pvc
