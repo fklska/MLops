@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: evidently-container
-        image: fklska/kino-drift:1.66
+        image: fklska/kino-drift:1.67
         imagePullPolicy: Always
         ports:
         - containerPort: 7888
