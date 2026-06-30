@@ -49,4 +49,4 @@ project = next((p for p in ws.list_projects() if p.name == "kinootziv_monitoring
 if not project:
     project = ws.create_project("kinootziv_monitoring")
 
-ws.add_snapshot(project.id, drift_report)
+ws.add_report(project.id, drift_report)
